@@ -146,6 +146,10 @@ metadata and the backend fallback mirror it.
 
 - A sentence ending in "etc." or "usw." keeps its full stop when spoken, so it no longer runs into the next sentence ("et cetera Then we left") (#2991)
 
+### Fixed
+
+- Streamed speech keeps IP addresses and version numbers such as "192.168.1.1" or "2.5.1" in one sentence instead of cutting them after the second dot
+
 ### Docs
 
 - Google Play store listing, graphics and Play Console answers for the Android app are ready for the owner to submit (#3257, #3258)
