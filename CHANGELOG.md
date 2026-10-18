@@ -142,6 +142,10 @@ metadata and the backend fallback mirror it.
 
 - The sponsor footer is gone from the app; sponsored integrations keep a Featured badge on their card in Integrations (#3031)
 
+### Fixed
+
+- A sentence ending in "etc." or "usw." keeps its full stop when spoken, so it no longer runs into the next sentence ("et cetera Then we left")
+
 ### Docs
 
 - Google Play store listing, graphics and Play Console answers for the Android app are ready for the owner to submit (#3257, #3258)
