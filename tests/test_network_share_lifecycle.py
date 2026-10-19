@@ -176,3 +176,27 @@ def test_share_listener_does_not_rerun_the_app_lifespan():
         if ns.get_state().enabled:
             asyncio.run(ns.disable(FastAPI()))
     assert events == []
+def test_share_port_bind_failure_raises_instead_of_exiting(monkeypatch):
+    """A port taken after the free-port probe must not exit the backend.
+
+    uvicorn calls sys.exit(1) when its bind fails. Inside the share task that
+    SystemExit escaped asyncio and stopped the backend's own event loop instead
+    of reaching enable()'s "listener failed to start" handling.
+    """
+    from fastapi import FastAPI
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as taken:
+        try:
+            taken.bind(("0.0.0.0", 0))
+        except OSError as e:
+            pytest.skip(f"binding 0.0.0.0 not permitted in this sandbox: {e}")
+        taken.listen()
+        port = taken.getsockname()[1]
+        monkeypatch.setattr(ns, "_runtime", ns._ShareRuntime())
+        monkeypatch.setattr(ns, "_find_free_port", lambda *_: port)
+        app = FastAPI()
+
+        with pytest.raises(RuntimeError, match="failed to start"):
+            asyncio.run(ns.enable(app))
+    assert ns.get_state().enabled is False
+    assert app.state.network_share.enabled is False
