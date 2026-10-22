@@ -64,7 +64,7 @@ metadata and the backend fallback mirror it.
 
 - New `mobile` workflow builds and tests both phone apps; a contract test fails when their theme or API description drifts from the desktop app (#2965)
 
-- iOS TestFlight workflow: maintainers can upload a signed iPhone build for internal testers from `main` ([guide](docs/mobile.md#testflight-maintainers)) (#3188)
+- Phone tester builds: maintainers can upload signed builds from `main` to TestFlight and Google Play internal testing; beta versions now build on both apps ([guide](docs/mobile.md#testflight-maintainers)) (#3188)
 
 - Gallery preview fallback smoke no longer flakes when a slower runner reads the playing clip in several byte ranges (#3018)
 
