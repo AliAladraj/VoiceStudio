@@ -57,6 +57,14 @@ jobs:
       - name: Build, unit tests, lint
         run: ./gradlew --no-daemon assembleDebug assembleDebugAndroidTest testDebugUnitTest lint
 
+      # A Beta channel version (X.Y.Z-beta.N) must configure too, not only the checked-in one.
+      - name: Beta version configures
+        run: |
+          node -e 'const f="../../package.json",p=require(f);p.version=p.version.replace(/-.*/,"")+"-beta.1";require("fs").writeFileSync(f,JSON.stringify(p,null,2)+"\n")'
+          ./gradlew --no-daemon -q :app:printAppVersion | tee "$RUNNER_TEMP/version.txt"
+          grep -qE '^versionName=[0-9]+\.[0-9]+\.[0-9]+-beta\.1 versionCode=[0-9]+$' "$RUNNER_TEMP/version.txt"
+          git checkout -- ../../package.json
+
       - name: Upload reports on failure
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -103,7 +111,24 @@ jobs:
         run: |
           xcodebuild -project mobile/ios/VoiceStudio/VoiceStudio.xcodeproj \
             -scheme VoiceStudio -destination "id=$SIM_UDID" \
+            -resultBundlePath "$RUNNER_TEMP/ui.xcresult" \
             CODE_SIGNING_ALLOWED=NO test-without-building
+
+      # ScreenshotTour keeps a screenshot of every screen; export them for review.
+      - name: Export UI screenshots
+        if: always()
+        run: |
+          [ -d "$RUNNER_TEMP/ui.xcresult" ] || exit 0
+          mkdir -p "$RUNNER_TEMP/shots"
+          xcrun xcresulttool export attachments --path "$RUNNER_TEMP/ui.xcresult" --output-path "$RUNNER_TEMP/shots"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: ios-screenshots
+          path: ${{ runner.temp }}/shots
+          if-no-files-found: ignore
+          retention-days: 7
 
       # Unsigned device build for maintainers to sideload onto their own iPhone
       # (it is signed on install with their Apple ID; see docs/mobile.md). Not a
