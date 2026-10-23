@@ -84,10 +84,13 @@ submits the app for App Store review. One-time setup in the Apple Developer team
 
 1. Register the App ID `sh.voicestudio.mobile` (Certificates, Identifiers &
    Profiles → Identifiers) and create the app in App Store Connect with it.
-2. Create an App Store Connect API key with the **Admin** role (Users and
+2. Register at least one iPhone under Devices (its UDID is in Finder when it
+   is connected). Automatic signing archives with a development profile first,
+   and Apple issues none for a team without devices.
+3. Create an App Store Connect API key with the **Admin** role (Users and
    Access → Integrations). Admin lets CI create the cloud-managed Apple
    Distribution certificate and App Store profile, so no `.p12` is stored.
-3. Create the `app-store-connect` environment (Settings → Environments), limit
+4. Create the `app-store-connect` environment (Settings → Environments), limit
    it to the `main` branch, and add `APP_STORE_CONNECT_KEY_ID`,
    `APP_STORE_CONNECT_ISSUER_ID` and `APP_STORE_CONNECT_API_KEY` (the full
    `.p8` text). `APPLE_TEAM_ID` is shared with macOS notarization.
@@ -122,3 +125,9 @@ never sends a release to production. One-time setup:
 The version name is the root `package.json` version; the version code is the
 workflow run number × 10 plus the attempt, so every upload is new. Local and
 `mobile` workflow builds stay debug-signed.
+
+## Dubbing errors
+
+Android keeps a failed computer dubbing job visible while you stay on the Dub
+screen. Worker updates do not dismiss the error, and reopening the screen does
+not repeat an error already shown.

@@ -32,6 +32,7 @@ export function SecondarySidebar({
   footer,
   library,
   libraryLabel,
+  collapsed: controlledCollapsed,
   onCollapsedChange,
 }: {
   title: string;
@@ -46,11 +47,14 @@ export function SecondarySidebar({
   /** The section's saved items (voices, takes, files). Adds a second tab beside the page's controls. */
   library?: ReactNode;
   libraryLabel?: string;
+  /** Controls the collapsed state when the parent owns a shared pane shortcut. */
+  collapsed?: boolean;
   /** Lets the page re-home the footer's content while the pane is collapsed. */
   onCollapsedChange?: (collapsed: boolean) => void;
 }) {
   const { t } = useTranslation();
-  const [collapsed, setCollapsedState] = useState(false);
+  const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(false);
+  const collapsed = controlledCollapsed ?? uncontrolledCollapsed;
   const [view, setView] = useState<'controls' | 'library'>('controls');
   const showLibrary = library != null && view === 'library';
   // Notify from the event handler, never from inside a state updater: updaters
@@ -58,7 +62,7 @@ export function SecondarySidebar({
   const setCollapsed = (next: boolean | ((value: boolean) => boolean)) => {
     const resolved = typeof next === 'function' ? next(collapsed) : next;
     if (resolved === collapsed) return;
-    setCollapsedState(resolved);
+    if (controlledCollapsed === undefined) setUncontrolledCollapsed(resolved);
     onCollapsedChange?.(resolved);
   };
   const dimensions = WIDTHS[size];

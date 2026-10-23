@@ -4,7 +4,9 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 const browser = await chromium.launch({
-  ...(process.env.PLAYWRIGHT_BUNDLED === '1' ? {} : { channel: process.env.PLAYWRIGHT_CHANNEL || 'msedge' }),
+  ...(process.env.PLAYWRIGHT_BUNDLED === '1'
+    ? {}
+    : { channel: process.env.PLAYWRIGHT_CHANNEL || 'msedge' }),
   headless: true,
 });
 const page = await browser.newPage();
@@ -14,7 +16,11 @@ try {
   await page.addInitScript(() => {
     localStorage.setItem('voicestudio.setup.complete.v1', '1');
     // The expanded navigation is under test, so keep it open beside the library.
-    localStorage.setItem('voicestudio.workspace-layout', JSON.stringify({ autoCollapseSidebar: false }));
+    const saved = JSON.parse(localStorage.getItem('voicestudio.workspace-layout') || '{}');
+    localStorage.setItem(
+      'voicestudio.workspace-layout',
+      JSON.stringify({ ...saved, autoCollapseSidebar: false }),
+    );
   });
   await page.goto(ui + '/#/clone');
   const sidebar = page.locator('aside').first();
@@ -34,8 +40,10 @@ try {
   };
   const navigation = sidebar.getByRole('navigation', { name: 'Workspaces', exact: true });
   await navigation.waitFor();
+  await sidebar.getByRole('slider', { name: 'Speed / quality', exact: true }).waitFor();
   // Simple keeps engine links out of the sidebar; they open from the slider's popover.
   assert.equal(await sidebar.locator('footer a:visible').count(), 0);
+  assert.equal(await sidebar.locator('[data-slot=engine-row]').count(), 0);
   await chooseView('Models');
   const speechTool = sidebar.getByRole('link', { name: /^Text to speech: .*Change engine$/ });
   await speechTool.focus();
@@ -177,7 +185,10 @@ try {
   try {
     await macPage.addInitScript(() => {
       localStorage.setItem('voicestudio.setup.complete.v1', '1');
-      localStorage.setItem('voicestudio.workspace-layout', JSON.stringify({ autoCollapseSidebar: false }));
+      localStorage.setItem(
+        'voicestudio.workspace-layout',
+        JSON.stringify({ autoCollapseSidebar: false }),
+      );
       Object.defineProperty(window, 'voicestudio', {
         value: {
           app: {

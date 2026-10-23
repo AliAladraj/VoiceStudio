@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
+import { expect } from 'playwright/test';
 
 const browser = await chromium.launch({
-  ...(process.env.PLAYWRIGHT_BUNDLED === '1' ? {} : { channel: process.env.PLAYWRIGHT_CHANNEL || 'msedge' }),
+  ...(process.env.PLAYWRIGHT_BUNDLED === '1'
+    ? {}
+    : { channel: process.env.PLAYWRIGHT_CHANNEL || 'msedge' }),
   headless: true,
 });
 const page = await browser.newPage({ viewport: { width: 1280, height: 1000 } });
@@ -68,7 +71,10 @@ try {
   await page.addInitScript(() => {
     localStorage.setItem('voicestudio.setup.complete.v1', '1');
     // These checks inspect the expanded navigation, so keep it open beside the library.
-    localStorage.setItem('voicestudio.workspace-layout', JSON.stringify({ autoCollapseSidebar: false }));
+    localStorage.setItem(
+      'voicestudio.workspace-layout',
+      JSON.stringify({ autoCollapseSidebar: false }),
+    );
   });
   await page.route('**/api/**', async (route) => {
     const request = route.request();
@@ -156,12 +162,10 @@ try {
   const slider = footer.getByRole('slider', { name: 'Speed / quality', exact: true });
   const checkedTier = () => slider.getAttribute('aria-valuetext');
   await slider.waitFor();
-  await page.waitForFunction(
-    () => document.querySelector('footer input[type=range]') && !document.querySelector('footer input[type=range]').disabled,
-  );
+  await expect(slider).toBeEnabled();
   await slider.focus();
   await page.keyboard.press('ArrowRight');
-  await page.waitForFunction(() => document.querySelector('footer input[type=range]')?.disabled);
+  await expect(slider).toBeDisabled();
   releaseSave();
   // Changing the tier opens the models popover so the switch is visible without a tall sidebar footer.
   const popup = page.locator('[data-slot=popover-content]');
@@ -182,11 +186,7 @@ try {
   await slider.focus();
   await page.keyboard.press('ArrowLeft');
   await footer.getByRole('alert').waitFor();
-  assert.equal(
-    await checkedTier(),
-    'Balanced',
-    'A rejected save restores the confirmed preset',
-  );
+  assert.equal(await checkedTier(), 'Balanced', 'A rejected save restores the confirmed preset');
   assert.ok(
     (await asr.innerText()).includes('medium'),
     'A rejected save preserves the confirmed model',
@@ -194,7 +194,7 @@ try {
   fail = false;
   await footer.getByRole('button', { name: 'Auto', exact: true }).click();
   await footer.getByRole('button', { name: 'Auto', exact: true, pressed: true }).waitFor();
-  await page.waitForFunction(() => !document.querySelector('footer input[type=range]')?.disabled);
+  await expect(slider).toBeEnabled();
   // The popover opened with the tier change and polled live usage; start counting afresh once closed.
   await page.keyboard.press('Escape');
   await popup.waitFor({ state: 'hidden' });
