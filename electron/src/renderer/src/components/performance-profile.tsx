@@ -11,7 +11,7 @@ import {
   ChevronRightIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useId, useState } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { Slider } from '@base-ui/react/slider';
 import { DirectionProvider } from '@base-ui/react/direction-provider';
 import { useQuery } from '@tanstack/react-query';
@@ -38,12 +38,15 @@ export function PerformanceProfile({
   family = null,
   variant = 'compact',
   showHardware = true,
+  extra,
   onApplied,
 }: {
   family?: PerformanceFamily | null;
   variant?: 'compact' | 'settings';
   /** The hardware-fit row under the compact slider; the simplest sidebar view leaves it out. */
   showHardware?: boolean;
+  /** Compact sidebar: show only the slider, and keep this (engines) plus the hardware fit in a popover. */
+  extra?: ReactNode;
   onApplied?: (state: PerformanceProfileState) => void;
 }) {
   const { t, i18n } = useTranslation();
@@ -73,6 +76,7 @@ export function PerformanceProfile({
   const choices: readonly PerformanceChoice[] = family
     ? performanceTiers
     : [...performanceTiers, 'auto'];
+  const popoverMode = extra != null && !family && variant !== 'settings';
   const selected = family ? profile.data?.effective[family] : profile.data?.global;
   const applicable = profile.data?.applicable_families ?? profile.data?.implemented_families ?? [];
   const supported = family === null ? true : applicable.includes(family);
@@ -92,6 +96,7 @@ export function PerformanceProfile({
     }
     setDraft(choices.indexOf(tier));
     setFailed(null);
+    if (popoverMode) setHardwareOpen(true);
     try {
       const applied = await profile.setTier({ tier, family });
       onApplied?.(applied);
@@ -248,9 +253,110 @@ export function PerformanceProfile({
     0,
     tiers.indexOf((shownTier ?? 'balanced') as (typeof tiers)[number]),
   );
-  return (
+  const panel = (
+    <PopoverContent
+      side="right"
+      className="max-h-[min(42rem,80dvh)] w-80 max-w-[calc(100vw-1rem)] space-y-3 overflow-y-auto p-4 text-xs"
+    >
+      {extra}
+      {plan && !family && (
+        <>
+            <div>
+              <p className="font-medium">
+                {t('performanceProfile.max') +
+                  ' · ' +
+                  t(
+                    'performanceHardware.' +
+                      (plan.max_status === 'limited' ? 'reason.memory' : plan.max_status),
+                  )}
+              </p>
+              <p className="mt-1 text-muted-foreground">{t('performanceHardware.voiceFirst')}</p>
+            </div>
+            <LiveDeviceUsage open={hardwareOpen} />
+            <div className="-mx-1">
+              {(['tts', 'asr', 'translation', 'dictation', 'diarisation'] as const).map((name) => {
+                const entry = plan.families[name];
+                return (
+                  <Link
+                    key={name}
+                    to="/settings/models/$family"
+                    params={{ family: name }}
+                    className="group flex min-h-7 items-center justify-between gap-3 rounded-md px-1 py-1 outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <span>{t('sidebarTools.' + name)}</span>
+                    <span className="flex items-center gap-1.5 text-end text-[11px] text-muted-foreground">
+                      {t('performanceHardware.reason.' + entry.reason)}
+                      <ChevronRightIcon
+                        className="size-3 shrink-0 opacity-50 group-hover:opacity-100 rtl:rotate-180"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+            <details className="group/details border-t pt-1 text-muted-foreground">
+              <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between gap-2 rounded outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+                {t('sidebarTools.details')}
+                <ChevronRightIcon
+                  className="size-3.5 shrink-0 group-open/details:rotate-90 rtl:rotate-180"
+                  aria-hidden="true"
+                />
+              </summary>
+              <div className="space-y-2 pt-1 leading-relaxed">
+                <p className="text-foreground/80 tabular-nums">
+                  {t('performanceHardware.specs', {
+                    ram:
+                      plan.hardware.ram_gb?.toLocaleString(i18n.language, {
+                        maximumFractionDigits: 0,
+                      }) ?? '—',
+                    cores: plan.hardware.cpu_threads,
+                  })}
+                  {plan.hardware.vram_gb != null &&
+                    ' · ' +
+                      t('performanceHardware.vram', {
+                        memory: plan.hardware.vram_gb.toLocaleString(i18n.language, {
+                          maximumFractionDigits: 0,
+                        }),
+                      })}
+                </p>
+                <p>{t('performanceHardware.priority')}</p>
+                <p>{t('performanceHardware.estimate')}</p>
+              </div>
+            </details>
+        </>
+      )}
+    </PopoverContent>
+  );
+  const body = (
     <div className="min-w-0 space-y-1.5 py-1.5">
       <div className="flex items-center justify-between gap-2 px-1">
+        {popoverMode ? (
+          <PopoverTrigger
+            openOnHover
+            delay={200}
+            render={
+              <button
+                type="button"
+                aria-label={hardwareSummary || undefined}
+                className="group/hw flex min-w-0 items-center gap-1 rounded px-1 py-0.5 text-start text-[11px] text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            }
+          >
+            <span id={groupId}>
+              {t(supported ? 'performanceProfile.title' : 'modelSettings.unavailable')}
+            </span>
+            {supported && shownTier && shownTier !== 'auto' && (
+              <span className="font-medium text-foreground/80">
+                {t('performanceProfile.' + shownTier)}
+              </span>
+            )}
+            <ChevronRightIcon
+              className="size-3 shrink-0 opacity-60 transition-transform group-hover/hw:translate-x-0.5 rtl:rotate-180 motion-reduce:transition-none"
+              aria-hidden="true"
+            />
+          </PopoverTrigger>
+        ) : (
         <span className="min-w-0 truncate text-[11px] text-muted-foreground">
           <span id={groupId}>
             {t(supported ? 'performanceProfile.title' : 'modelSettings.unavailable')}
@@ -261,6 +367,7 @@ export function PerformanceProfile({
             </span>
           )}
         </span>
+        )}
         <button
           type="button"
           aria-pressed={autoOn}
@@ -329,74 +436,7 @@ export function PerformanceProfile({
               aria-hidden="true"
             />
           </PopoverTrigger>
-          <PopoverContent
-            side="right"
-            className="max-h-[min(42rem,80dvh)] w-80 max-w-[calc(100vw-1rem)] space-y-3 overflow-y-auto p-4 text-xs"
-          >
-            <div>
-              <p className="font-medium">
-                {t('performanceProfile.max') +
-                  ' · ' +
-                  t(
-                    'performanceHardware.' +
-                      (plan.max_status === 'limited' ? 'reason.memory' : plan.max_status),
-                  )}
-              </p>
-              <p className="mt-1 text-muted-foreground">{t('performanceHardware.voiceFirst')}</p>
-            </div>
-            <LiveDeviceUsage open={hardwareOpen} />
-            <div className="-mx-1">
-              {(['tts', 'asr', 'translation', 'dictation', 'diarisation'] as const).map((name) => {
-                const entry = plan.families[name];
-                return (
-                  <Link
-                    key={name}
-                    to="/settings/models/$family"
-                    params={{ family: name }}
-                    className="group flex min-h-7 items-center justify-between gap-3 rounded-md px-1 py-1 outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <span>{t('sidebarTools.' + name)}</span>
-                    <span className="flex items-center gap-1.5 text-end text-[11px] text-muted-foreground">
-                      {t('performanceHardware.reason.' + entry.reason)}
-                      <ChevronRightIcon
-                        className="size-3 shrink-0 opacity-50 group-hover:opacity-100 rtl:rotate-180"
-                        aria-hidden="true"
-                      />
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-            <details className="group/details border-t pt-1 text-muted-foreground">
-              <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between gap-2 rounded outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
-                {t('sidebarTools.details')}
-                <ChevronRightIcon
-                  className="size-3.5 shrink-0 group-open/details:rotate-90 rtl:rotate-180"
-                  aria-hidden="true"
-                />
-              </summary>
-              <div className="space-y-2 pt-1 leading-relaxed">
-                <p className="text-foreground/80 tabular-nums">
-                  {t('performanceHardware.specs', {
-                    ram:
-                      plan.hardware.ram_gb?.toLocaleString(i18n.language, {
-                        maximumFractionDigits: 0,
-                      }) ?? '—',
-                    cores: plan.hardware.cpu_threads,
-                  })}
-                  {plan.hardware.vram_gb != null &&
-                    ' · ' +
-                      t('performanceHardware.vram', {
-                        memory: plan.hardware.vram_gb.toLocaleString(i18n.language, {
-                          maximumFractionDigits: 0,
-                        }),
-                      })}
-                </p>
-                <p>{t('performanceHardware.priority')}</p>
-                <p>{t('performanceHardware.estimate')}</p>
-              </div>
-            </details>
-          </PopoverContent>
+          {panel}
         </Popover>
       )}
       <p id={groupId + '-help'} className="sr-only">
@@ -426,5 +466,20 @@ export function PerformanceProfile({
         </div>
       )}
     </div>
+  );
+  return popoverMode ? (
+    <Popover
+      open={hardwareOpen}
+      onOpenChange={(open) => {
+        // A save in flight keeps its feedback visible until it settles.
+        if (!open && profile.isSaving) return;
+        setHardwareOpen(open);
+      }}
+    >
+      {body}
+      {panel}
+    </Popover>
+  ) : (
+    body
   );
 }

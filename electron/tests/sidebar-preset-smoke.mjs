@@ -159,8 +159,10 @@ try {
   await page.keyboard.press('ArrowRight');
   await page.waitForFunction(() => document.querySelector('footer [role=slider]')?.disabled);
   releaseSave();
-  await footer.locator('[data-detail-level=models]').waitFor();
-  const asr = footer.locator('[data-slot=engine-row]').filter({ hasText: 'Speech to text' });
+  // Changing the tier opens the models popover so the switch is visible without a tall sidebar footer.
+  const popup = page.locator('[data-slot=popover-content]');
+  await popup.waitFor();
+  const asr = popup.locator('[data-slot=engine-row]').filter({ hasText: 'Speech to text' });
   await asr.getByRole('status').filter({ hasText: 'Switching' }).waitFor();
   assert.ok(
     (await asr.innerText()).includes('medium'),
@@ -189,6 +191,11 @@ try {
   await footer.getByRole('button', { name: 'Auto', exact: true }).click();
   await footer.getByRole('button', { name: 'Auto', exact: true, pressed: true }).waitFor();
   await page.waitForFunction(() => !document.querySelector('footer [role=slider]')?.disabled);
+  // The popover opened with the tier change and polled live usage; start counting afresh once closed.
+  await page.keyboard.press('Escape');
+  await popup.waitFor({ state: 'hidden' });
+  telemetryReads = 0;
+  await page.waitForTimeout(2_300);
   assert.equal(telemetryReads, 0, 'Closed hardware panel does not poll');
   await footer.getByRole('button', { name: 'Adapted to your hardware' }).click();
   const live = page.getByRole('region', { name: 'Live usage' });
