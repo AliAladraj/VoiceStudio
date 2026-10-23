@@ -1,21 +1,34 @@
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { useWindowFullscreen } from './use-window-fullscreen';
 
-const size = (width: number, height: number) => {
-  Object.defineProperty(window, 'innerWidth', { configurable: true, value: width });
-  Object.defineProperty(window, 'innerHeight', { configurable: true, value: height });
-};
+afterEach(() => {
+  Reflect.deleteProperty(window, 'voicestudio');
+});
 
-afterEach(() => size(1024, 768));
-
-it('reports fullscreen only while the window fills the screen', () => {
-  size(screen.width - 100, screen.height - 100);
-  const { result } = renderHook(() => useWindowFullscreen());
-  expect(result.current).toBe(false);
-  act(() => {
-    size(screen.width, screen.height);
-    window.dispatchEvent(new Event('resize'));
+it('follows native fullscreen changes and stops listening on unmount', async () => {
+  let emit: (value: boolean) => void = () => {};
+  const off = vi.fn();
+  Object.defineProperty(window, 'voicestudio', {
+    configurable: true,
+    value: {
+      app: {
+        isFullScreen: () => Promise.resolve(false),
+        onFullScreen: (callback: (value: boolean) => void) => {
+          emit = callback;
+          return off;
+        },
+      },
+    },
   });
+  const { result, unmount } = renderHook(() => useWindowFullscreen());
+  expect(result.current).toBe(false);
+  await act(async () => emit(true));
   expect(result.current).toBe(true);
+  unmount();
+  expect(off).toHaveBeenCalled();
+});
+
+it('stays false without a bridge', () => {
+  expect(renderHook(() => useWindowFullscreen()).result.current).toBe(false);
 });
