@@ -16,7 +16,9 @@ The library combines backend dubbing projects, local IndexedDB Stories and Audio
 voice profiles, transcription history, generated takes, export history and completed longform
 renders. A stable secondary sidebar filters each source and shows live counts; one search and the
 list/grid switch operate without moving the workspace origin. At compact widths the global
-sidebar becomes its icon rail, matching the other secondary-sidebar workspaces.
+sidebar becomes its icon rail, matching the other secondary-sidebar workspaces. The same work
+is also reachable where it is made: Stories and Audiobook show their projects, Dubbing its saved
+dub projects, and Clone, Home and Design the saved voices, each in the workspace's own side pane.
 
 Opening a book or story restores its saved draft after confirmation; deletion detaches the draft
 without removing generated media. Inline rename changes only the saved name: dubbing uses the
