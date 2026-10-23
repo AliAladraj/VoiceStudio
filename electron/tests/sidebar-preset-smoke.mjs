@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
+import { expect } from 'playwright/test';
 
 const browser = await chromium.launch({
   ...(process.env.PLAYWRIGHT_BUNDLED === '1' ? {} : { channel: process.env.PLAYWRIGHT_CHANNEL || 'msedge' }),
@@ -152,12 +153,10 @@ try {
   const slider = footer.getByRole('slider', { name: 'Speed / quality', exact: true });
   const checkedTier = () => slider.getAttribute('aria-valuetext');
   await slider.waitFor();
-  await page.waitForFunction(
-    () => document.querySelector('footer [role=slider]') && !document.querySelector('footer [role=slider]').disabled,
-  );
+  await expect(slider).toBeEnabled();
   await slider.focus();
   await page.keyboard.press('ArrowRight');
-  await page.waitForFunction(() => document.querySelector('footer [role=slider]')?.disabled);
+  await expect(slider).toBeDisabled();
   releaseSave();
   // Changing the tier opens the models popover so the switch is visible without a tall sidebar footer.
   const popup = page.locator('[data-slot=popover-content]');
@@ -190,7 +189,7 @@ try {
   fail = false;
   await footer.getByRole('button', { name: 'Auto', exact: true }).click();
   await footer.getByRole('button', { name: 'Auto', exact: true, pressed: true }).waitFor();
-  await page.waitForFunction(() => !document.querySelector('footer [role=slider]')?.disabled);
+  await expect(slider).toBeEnabled();
   // The popover opened with the tier change and polled live usage; start counting afresh once closed.
   await page.keyboard.press('Escape');
   await popup.waitFor({ state: 'hidden' });
@@ -213,8 +212,8 @@ try {
   assert.equal(await hardwareSpecs.isVisible(), false, 'Details collapse with the keyboard');
   await details.blur();
   await page.getByText('Memory limit', { exact: true }).first().waitFor();
-  await footer.getByText('OmniVoice', { exact: true }).waitFor();
-  await footer.getByText('Parakeet TDT v3', { exact: true }).waitFor();
+  await popup.getByText('OmniVoice', { exact: true }).waitFor();
+  await popup.getByText('Parakeet TDT v3', { exact: true }).waitFor();
   assert.deepEqual(writes.at(-1), { tier: 'auto', family: null });
   await page
     .locator('[data-slot=popover-content]')

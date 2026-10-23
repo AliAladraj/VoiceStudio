@@ -11,7 +11,7 @@ import {
   ChevronRightIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useId, useState, type ReactNode } from 'react';
+import { useId, useRef, useState, type ReactNode } from 'react';
 import { Slider } from '@base-ui/react/slider';
 import { DirectionProvider } from '@base-ui/react/direction-provider';
 import { useQuery } from '@tanstack/react-query';
@@ -66,6 +66,7 @@ export function PerformanceProfile({
   const groupId = useId();
   const [draft, setDraft] = useState<number | null>(null);
   const [hardwareOpen, setHardwareOpen] = useState(false);
+  const compactControl = useRef<HTMLDivElement>(null);
   const busy =
     profile.isSaving ||
     !isBackendReachable(backend.stage) ||
@@ -255,7 +256,8 @@ export function PerformanceProfile({
   );
   const panel = (
     <PopoverContent
-      side="right"
+      side="inline-end"
+      anchor={popoverMode ? compactControl : undefined}
       className="max-h-[min(42rem,80dvh)] w-80 max-w-[calc(100vw-1rem)] space-y-3 overflow-y-auto p-4 text-xs"
     >
       {extra}
@@ -329,7 +331,7 @@ export function PerformanceProfile({
     </PopoverContent>
   );
   const body = (
-    <div className="min-w-0 space-y-1.5 py-1.5">
+    <div ref={compactControl} className="min-w-0 space-y-1.5 py-1.5">
       <div className="flex items-center justify-between gap-2 px-1">
         {popoverMode ? (
           <PopoverTrigger
