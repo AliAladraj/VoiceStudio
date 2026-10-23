@@ -1657,8 +1657,20 @@ export function DubPage() {
                   <p className="text-xs text-muted-foreground">{t('dub.fit_speed_hint')}</p>
                   {(
                     [
-                      { key: 'audio_rate_cap', label: 'dub.fit_max_speed', min: 1, max: 2, defaultValue: 1.5 },
-                      { key: 'min_audio_rate', label: 'dub.fit_min_speed', min: 0.5, max: 1, defaultValue: 0.85 },
+                      {
+                        key: 'audio_rate_cap',
+                        label: 'dub.fit_max_speed',
+                        min: 1,
+                        max: 2,
+                        defaultValue: 1.5,
+                      },
+                      {
+                        key: 'min_audio_rate',
+                        label: 'dub.fit_min_speed',
+                        min: 0.5,
+                        max: 1,
+                        defaultValue: 0.85,
+                      },
                     ] as const
                   ).map((knob) => {
                     const current = session.fitOptions?.[knob.key] ?? knob.defaultValue;

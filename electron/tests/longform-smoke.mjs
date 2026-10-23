@@ -179,10 +179,7 @@ try {
     .getByRole('navigation', { name: 'Workspaces', exact: true })
     .getByRole('button', { name: 'Stories', exact: true })
     .click();
-  await page
-    .getByRole('dialog')
-    .getByRole('link', { name: 'Stories', exact: true })
-    .click();
+  await page.getByRole('dialog').getByRole('link', { name: 'Stories', exact: true }).click();
   await page
     .locator('[data-slot=secondary-sidebar]')
     .getByRole('button', { name: 'Narrator fixture', exact: true })

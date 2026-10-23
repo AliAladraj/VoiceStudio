@@ -5,7 +5,10 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 const state = vi.hoisted(() => ({
   navigate: vi.fn(),
   dubs: [] as unknown[],
-  longform: { active: null as string | null, drafts: { stories: { projectId: null }, audiobook: { projectId: 'b2' } } },
+  longform: {
+    active: null as string | null,
+    drafts: { stories: { projectId: null }, audiobook: { projectId: 'b2' } },
+  },
   dub: { project: null as { id: string } | null, phase: 'idle', recovery: null },
   openDub: vi.fn(() => true),
 }));
@@ -14,11 +17,15 @@ vi.mock('react-i18next', () => ({
 }));
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => state.navigate,
-  Link: ({ children, to }: { children: unknown; to: string }) => <a href={to}>{children as never}</a>,
+  Link: ({ children, to }: { children: unknown; to: string }) => (
+    <a href={to}>{children as never}</a>
+  ),
 }));
 vi.mock('@/lib/api/client', () => ({
   apiJson: async (path: string) =>
-    path === '/projects' ? state.dubs : state.dubs.find((p) => path.endsWith((p as { id: string }).id)),
+    path === '/projects'
+      ? state.dubs
+      : state.dubs.find((p) => path.endsWith((p as { id: string }).id)),
   describeError: (error: unknown) => String(error),
 }));
 vi.mock('../longform/longform-session', () => ({
@@ -32,7 +39,9 @@ import { DubProjects } from './dub-projects';
 
 const renderList = () =>
   render(
-    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
       <DubProjects />
     </QueryClientProvider>,
   );

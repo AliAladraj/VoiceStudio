@@ -99,11 +99,16 @@ export function DubProjects() {
               >
                 <FilmIcon
                   aria-hidden="true"
-                  className={cn('size-4 shrink-0', active ? 'text-primary' : 'text-muted-foreground')}
+                  className={cn(
+                    'size-4 shrink-0',
+                    active ? 'text-primary' : 'text-muted-foreground',
+                  )}
                 />
                 <span className="flex min-w-0 flex-1 flex-col leading-tight">
                   <span className="truncate text-[13px] font-medium">{row.name}</span>
-                  {when && <span className="truncate text-[11px] text-muted-foreground">{when}</span>}
+                  {when && (
+                    <span className="truncate text-[11px] text-muted-foreground">{when}</span>
+                  )}
                 </span>
               </button>
             </li>

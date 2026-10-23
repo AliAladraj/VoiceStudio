@@ -91,7 +91,9 @@ export function ProjectSettings({
   const Wrapper = bare ? 'div' : 'details';
   return (
     <Wrapper className="space-y-3">
-      {!bare && <summary className="cursor-pointer text-sm font-medium">{t('stories.projects')}</summary>}
+      {!bare && (
+        <summary className="cursor-pointer text-sm font-medium">{t('stories.projects')}</summary>
+      )}
       <label className="block space-y-1 text-xs">
         {t('stories.projectName')}
         <Input
