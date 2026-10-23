@@ -1,5 +1,6 @@
 import importlib.util
 import plistlib
+import sys
 from pathlib import Path
 
 import pytest
@@ -65,6 +66,16 @@ def test_workflow_signs_verifies_and_cleans_up_the_key():
     assert "secrets." not in yaml.dump(load_workflow()["jobs"]["testflight"].get("env", {}))
 
 
+def test_clean_testflight_runner_prepares_native_dependencies_before_project_generation():
+    steps = load_workflow()["jobs"]["testflight"]["steps"]
+    commands = [step.get("run", "") for step in steps]
+    native = next(i for i, command in enumerate(commands) if "bash mobile/native/ios/build.sh ios" in command)
+    generate = next(i for i, command in enumerate(commands) if "xcodegen generate" in command)
+    archive = next(i for i, command in enumerate(commands) if "-archivePath" in command)
+    assert native < generate < archive
+    assert "if" not in steps[native]  # A cache hit still needs generated headers restored.
+
+
 def test_archive_check_matches_automatic_signing():
     # The archive carries the development identity until export re-signs it, so
     # requiring Apple Distribution here failed every run; check the team instead.
@@ -99,6 +110,18 @@ def test_app_icon_is_an_opaque_1024_png():
     width, height = int.from_bytes(png[16:20], "big"), int.from_bytes(png[20:24], "big")
     assert (width, height) == (1024, 1024)
     assert png[25] == 2, "App Store icons must be RGB without an alpha channel"
+
+
+@pytest.mark.skipif(sys.platform != "darwin", reason="Brand renderer uses macOS CoreGraphics")
+def test_generated_and_bundled_catalogs_have_one_app_icon(tmp_path):
+    generated = tmp_path / "Brand.xcassets"
+    # Simulate an incremental build made before the App Store icon was bundled.
+    (generated / "AppIcon.appiconset").mkdir(parents=True)
+    prepare_resources.prepare_brand_assets(generated)
+    icons = list((IOS / "Resources").rglob("AppIcon.appiconset"))
+    icons += list(generated.rglob("AppIcon.appiconset"))
+    assert len(icons) == 1, "Duplicate AppIcon catalogs make actool's icon selection ambiguous"
+    assert (generated / "LaunchLogo.imageset" / "logo-3x.png").is_file()
 
 
 def test_mobile_ci_builds_ios_with_the_upload_toolchain():
