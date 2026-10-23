@@ -1,3 +1,4 @@
+import { DubProjects } from './dub-projects';
 import { Menu } from '@base-ui/react/menu';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { SecondarySidebar } from '@/components/workspace-sidebar';
@@ -1011,6 +1012,8 @@ export function DubPage() {
           icon={FilmIcon}
           size="spacious"
           variant="controls"
+          library={<DubProjects />}
+          libraryLabel={t('projects.title')}
           className="flex flex-col gap-2"
         >
           <section

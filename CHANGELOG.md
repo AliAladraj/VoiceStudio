@@ -26,6 +26,7 @@ metadata and the backend fallback mirror it.
 
 ### Fixed
 
+- Stories, Audiobook and Dubbing show their saved projects in a Projects tab beside the controls, so your files are one tap away wherever you work (#3216)
 - The GitHub button in the top bar is one Star pill with the live count, and the star fills gold on hover (#3216)
 - The sidebar is now a slim icon rail beside each section's own pane: Home and Clone get a Saved voices / Recent takes column, Design gets a Saved voices tab, and the full navigation is one click away (#3216)
 - Speed / quality in the sidebar is a simple slider again; models and hardware fit open in a popover on hover, click or change, so the simplest view leaves the sidebar bottom free (#3031)
