@@ -26,6 +26,7 @@ metadata and the backend fallback mirror it.
 
 ### Fixed
 
+- Speed/quality changes finish as soon as they are saved, even while the clone controls are still loading (#3031)
 - Android dubbing errors remain visible when worker updates arrive while their receipt is being saved (#3031)
 - Speed / quality in the sidebar is a simple slider again; models and hardware fit open in a popover on hover, click or change, so the simplest view leaves the sidebar bottom free (#3031)
 - The Latest take panel is more compact: file details, render time and Check audio share one row (#3031)
