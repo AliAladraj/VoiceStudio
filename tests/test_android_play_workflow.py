@@ -49,6 +49,17 @@ def test_signed_android_workflows_share_build_number_source_and_serialization():
         assert "GITHUB_RUN_ATTEMPT" not in build["run"]
 
 
+def test_signed_android_workflows_install_native_build_tools_before_gradle():
+    for filename, job_name in ((WORKFLOW, "play-internal"),
+                               (ROOT / ".github/workflows/mobile-release.yml", "android")):
+        steps = load(filename)["jobs"][job_name]["steps"]
+        install = next((i for i, step in enumerate(steps) if "sdkmanager" in step.get("run", "")
+                        and "ndk;27.1.12297006" in step["run"] and "cmake;3.22.1" in step["run"]), None)
+        assert install is not None, f"{filename.name} must install the pinned NDK and CMake"
+        build = next(i for i, step in enumerate(steps) if "./gradlew" in step.get("run", ""))
+        assert install < build
+
+
 def test_build_numbers_advance_across_workflows_and_reruns(monkeypatch):
     import runpy
 

@@ -37,6 +37,7 @@ metadata and the backend fallback mirror it.
 
 ### Fixed
 
+- Android keeps dictated text available when switching between phone and computer, and cancelled sessions do not replace it with stale updates or errors (#3216)
 - Android app icons preserve transparent waveform paths from the shared logo, including themed icons (#2969)
 - Speak keeps your script when switching between the phone and computer on Android (#2969)
 - Phone dubbing no longer speaks the wrong words when a quiet reference clip is not recognised (#2969)
@@ -87,6 +88,7 @@ metadata and the backend fallback mirror it.
 
 ### CI
 
+- Play uploads install the pinned NDK and CMake before building the on-device runtimes and signed bundle (#3216)
 - iOS consent checks drag the native sheet handle before verifying that passive dismissal replaces a prior opt-in with No (#3216)
 - Parallel tests use stable names for generated audio samples so WAV timestamps cannot break test collection (#3216)
 - Android release and Play builds share an increasing version code to prevent reused or decreasing build numbers (#2969)

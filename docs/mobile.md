@@ -26,6 +26,7 @@ choose, per task, to run on **This phone** or **My computer**.
   Play completed dubs directly in the app, including after using Dictate;
   switching between video results keeps both picture and sound.
 - **Dictate**: tap the mic and watch the transcript appear live.
+  Switching between phone and computer keeps the text available to copy or share.
 - **Models**: download, update or delete the on-device models.
 
 ## On-device models
@@ -142,6 +143,7 @@ number and attempt, so every upload is new.
 ## Play internal testing (maintainers)
 
 The `Android Play internal testing` workflow is the Android counterpart: it
+installs the pinned NDK and CMake for the on-device runtimes, then
 signs a release bundle with the Play upload key and uploads it to the Play
 Console **internal testing** track. It is dispatched by hand from `main` and
 never sends a release to production. One-time setup:

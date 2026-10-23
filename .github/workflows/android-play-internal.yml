@@ -61,6 +61,9 @@ jobs:
       - name: SDK location
         run: printf 'sdk.dir=%s\n' "$ANDROID_HOME" > local.properties
 
+      - name: NDK and CMake
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;27.1.12297006" "cmake;3.22.1" > /dev/null
+
       - name: Write upload keystore
         env:
           KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE }}
