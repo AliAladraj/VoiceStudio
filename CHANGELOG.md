@@ -26,7 +26,7 @@ metadata and the backend fallback mirror it.
 
 ### Fixed
 
-- On macOS full screen the sidebar logo moves into the freed corner, the compact rail drops its traffic-light gap, and the default sidebar is a little narrower (#3031)
+- On macOS full screen the sidebar logo moves into the freed corner, the compact rail drops its traffic-light gap (#3031)
 
 - Bug reports no longer risk freezing the app while looking for your tools: the Node-version folder scan now runs off the main thread (#3180)
 - Bug reports no longer freeze the app when the tool search or a drive stalls, and free disk is only borrowed from a parent folder when the install folder doesn't exist yet (#3179)

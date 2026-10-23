@@ -33,8 +33,8 @@ export function WorkspaceSidebar() {
   const sidebarResize = usePaneResize({
     storageKey: 'voicestudio.library-width',
     side: 'left',
-    minimum: mac ? 240 : 220,
-    initial: mac ? 264 : 256,
+    minimum: mac ? 288 : 220,
+    initial: mac ? 288 : 256,
     maximum: 360,
     reserve: compactViewport && secondaryWorkspace && forceExpanded ? 520 : 640,
     enabled: libraryOpen,
