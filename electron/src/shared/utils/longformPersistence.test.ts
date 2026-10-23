@@ -10,6 +10,10 @@ import {
 } from './longformPersistence';
 import { createCoalescedJsonStorage } from './coalescedJsonStorage';
 
+// These tests round-trip a multi-megabyte manuscript (~0.4s locally); the macOS Intel
+// release runner took >5s, which failed v0.5.7-beta.1 packaging.
+const HEAVY_PAYLOAD_TIMEOUT = 30_000;
+
 type TestState = Record<string, unknown>;
 
 function clone<T>(value: T): T {
@@ -153,7 +157,7 @@ describe('split long-form persistence', () => {
     expect(restored?.state.script).toBe(largeScript);
     expect(restored).not.toBeNull();
     expect((restored!.state.storyProjects as TestState[])[0].script).toBe(largeScript);
-  });
+  }, HEAVY_PAYLOAD_TIMEOUT);
 
   it('recovers from localStorage quota failure using the committed durable payload', async () => {
     const largeScript = 'quota-safe manuscript '.repeat(300_000);
@@ -187,7 +191,7 @@ describe('split long-form persistence', () => {
     expect(restored?.state.script).toBe(largeScript);
     expect(restored).not.toBeNull();
     expect((restored!.state.storyProjects as TestState[])[0].name).toBe('Book');
-  });
+  }, HEAVY_PAYLOAD_TIMEOUT);
 
   it('retains the full legacy fallback when IndexedDB is out of quota', async () => {
     const legacy = legacyEnvelope('last recoverable copy');
