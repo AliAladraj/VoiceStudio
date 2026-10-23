@@ -9,6 +9,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -20,13 +22,16 @@ import com.voicestudio.mobile.features.*
 import com.voicestudio.mobile.designsystem.*
 import com.voicestudio.mobile.network.*
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
 
-@Composable private fun ComputerDictateScreen(vm:StudioViewModel) {
+private val dictationTranscriptSaver=Saver<MutableStateFlow<String>,String>(save={it.value},restore={MutableStateFlow(it)})
+
+@Composable private fun ComputerDictateScreen(vm:StudioViewModel, transcript: MutableStateFlow<String>) {
     val context=LocalContext.current
     val scope=rememberCoroutineScope()
     val api=vm.api ?: return
-    val controller=remember(api) {DictationController(api,scope,vm::fail)}
-    val transcript by controller.text.collectAsState()
+    val controller=remember(api,transcript) {DictationController(api,scope,vm::fail,transcript=transcript)}
+    val text by controller.text.collectAsState()
     val active by controller.active.collectAsState()
     val lifecycle=LocalLifecycleOwner.current
     var readiness by remember {mutableStateOf<Readiness?>(null)}
@@ -63,22 +68,23 @@ import kotlinx.coroutines.CancellationException
             }
         }
         Secondary("mobile.simple.retry",!checking) {scope.launch {check()}}
-        Text(transcript,modifier=Modifier.fillMaxWidth().heightIn(min=VSTheme.touchTarget*3).semantics {liveRegion=LiveRegionMode.Polite})
+        Text(text,modifier=Modifier.fillMaxWidth().heightIn(min=VSTheme.touchTarget*3).semantics {liveRegion=LiveRegionMode.Polite})
     }, controls={
         MicControl(active,ready,tap={holding=false;if(active) controller.finish() else start()},hold={holding=true;holdStart()},release={if(holding) {holding=false;controller.finish()}})
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(VSTheme.gap,androidx.compose.ui.Alignment.CenterHorizontally)) {
-            IconAction("mobile.dictate.copy",VSIcons.Copy,transcript.isNotBlank()) {context.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText(null,transcript))}
-            IconAction("mobile.speak.share",androidx.compose.material.icons.Icons.Default.Share,transcript.isNotBlank()) {shareText(context,transcript)}
+            IconAction("mobile.dictate.copy",VSIcons.Copy,text.isNotBlank()) {context.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText(null,text))}
+            IconAction("mobile.speak.share",androidx.compose.material.icons.Icons.Default.Share,text.isNotBlank()) {shareText(context,text)}
         }
     })
 }
 
 @Composable fun DictateScreen(vm: StudioViewModel) {
+    val transcript=rememberSaveable(saver=dictationTranscriptSaver) {MutableStateFlow("")}
     com.voicestudio.mobile.features.models.TaskLocation(vm,"dictate",setOf("asr-stream")) {location,model ->
-        if(location==com.voicestudio.mobile.local.RunLocation.COMPUTER) ComputerDictateScreen(vm)
+        if(location==com.voicestudio.mobile.local.RunLocation.COMPUTER) ComputerDictateScreen(vm,transcript)
         else {
             val phone by vm.phone.state.collectAsState()
-            PhoneDictateScreen(vm,model,location==com.voicestudio.mobile.local.RunLocation.PHONE&&model?.let {phone.canRun(it,vm.phone.ramBytes)}==true)
+            PhoneDictateScreen(vm,model,location==com.voicestudio.mobile.local.RunLocation.PHONE&&model?.let {phone.canRun(it,vm.phone.ramBytes)}==true,transcript)
         }
     }
 }

@@ -11,8 +11,8 @@ import okhttp3.*
 import okio.ByteString.Companion.toByteString
 
 class DictationController(private val api:VoiceStudioApi,private val scope:CoroutineScope,private val failure:(Throwable)->Unit,
-    private val audio: DictationAudioSource = MicrophoneSource()) : AutoCloseable {
-    private val mutableText=MutableStateFlow("")
+    private val audio: DictationAudioSource = MicrophoneSource(), transcript: MutableStateFlow<String> = MutableStateFlow("")) : AutoCloseable {
+    private val mutableText=transcript
     val text=mutableText.asStateFlow()
     private val mutableActive=MutableStateFlow(false)
     val active=mutableActive.asStateFlow()
@@ -87,7 +87,7 @@ class DictationController(private val api:VoiceStudioApi,private val scope:Corou
                 }
                 if(!ended.isCompleted) socket?.send("{\"type\":\"input_audio.end\"}")
                 withTimeout(60000) {ended.await()}
-            } catch(e:TimeoutCancellationException) {failure(ClientFailure("mobile.errors.timeout"))} catch(e:CancellationException) {throw e} catch(e:Exception) {failure(e)}
+            } catch(e:TimeoutCancellationException) {if(session==generation) failure(ClientFailure("mobile.errors.timeout"))} catch(e:CancellationException) {throw e} catch(e:Exception) {if(session==generation) failure(e)}
             finally {if(session==generation) {recording=false;socket?.close(1000,null);socket=null;mutableActive.value=false}}
         }
     }

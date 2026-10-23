@@ -2,6 +2,7 @@ package com.voicestudio.mobile.features.dictate
 
 import com.voicestudio.mobile.network.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
 import okhttp3.*
 import okhttp3.mockwebserver.*
 import org.junit.Test
@@ -10,6 +11,30 @@ import org.junit.Assert.*
 class DictationProtocolTest {
     private suspend fun awaitCondition(condition: () -> Boolean) {
         withTimeout(2000) { while(!condition()) delay(5) }
+    }
+    @Test fun closedSessionCannotReportLateCaptureFailureOnAnotherRoute() = runBlocking {
+        val server=MockWebServer()
+        server.enqueue(MockResponse().setBody("""{"ready":true}"""))
+        server.enqueue(MockResponse().withWebSocketUpgrade(object:WebSocketListener() {
+            override fun onClosing(webSocket:WebSocket,code:Int,reason:String) {webSocket.close(code,null)}
+        }))
+        server.start()
+        val scope=CoroutineScope(SupervisorJob()+Dispatchers.Default)
+        val entered=CompletableDeferred<Unit>()
+        val errors=java.util.concurrent.CopyOnWriteArrayList<Throwable>()
+        val controller=DictationController(VoiceStudioApi(PairingAddress.parse(server.url("/").toString())),scope,{errors.add(it)},
+            DictationAudioSource {_,_ ->
+                entered.complete(Unit)
+                try {awaitCancellation()}
+                finally {withContext(NonCancellable) {throw IllegalStateException("Old capture cleanup")}}
+            })
+        try {
+            controller.start();withTimeout(5000) {entered.await()}
+            controller.close()
+            withTimeout(5000) {scope.coroutineContext[Job]!!.children.toList().joinAll()}
+            assertTrue(errors.toString(),errors.isEmpty())
+            assertFalse(controller.active.value)
+        } finally {controller.close();scope.cancel();server.shutdown()}
     }
     @Test fun utteranceFinalsKeepRecordingUntilSummaryWithoutSocketClose() = runBlocking {
         val server=MockWebServer()
