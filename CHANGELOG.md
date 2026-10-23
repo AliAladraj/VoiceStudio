@@ -37,6 +37,7 @@ metadata and the backend fallback mirror it.
 
 ### Fixed
 
+- Desktop crash-recovery checks keep the process handle after a forced exit, avoiding a race in the macOS test harness (#3216)
 - Section tabs preserve unfinished project edits and support keyboard navigation; saved dub loads confirm before replacing work, recheck edits made during loading and stop when you leave the workspace (#3216)
 - Stories, Audiobook and Dubbing show their saved projects in a Projects tab beside the controls, so your files are one tap away wherever you work (#3216)
 - The GitHub button in the top bar is one Star pill with the live count, and the star fills gold on hover (#3216)

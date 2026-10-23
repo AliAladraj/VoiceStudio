@@ -303,6 +303,8 @@ bun run check:electron
 # CI runs these on macOS, Windows and Linux. On Linux without a display,
 # prefix the last command with `xvfb-run -a`. Failures leave a Playwright
 # trace and screenshot in electron/test-results/.
+# The forced-exit case waits for Playwright to dispose the app before relaunching;
+# the harness retains the child process so collecting guards needs no dead IPC handle.
 bun run --cwd electron build
 bun run --cwd electron test:desktop-ui
 
