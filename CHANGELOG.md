@@ -9,7 +9,7 @@ metadata and the backend fallback mirror it.
 ## [Unreleased]
 **Highlights**
 
-- Preview iOS and Android apps that run VoiceStudio on your phone, offline
+- Preview iOS and Android apps that run VoiceStudio on your phone, offline after downloading the models
 - Opt-in Beta update channel: get fixes early from Settings → Updates, and roll onto the next stable release automatically
 
 ### Changed
@@ -23,6 +23,7 @@ metadata and the backend fallback mirror it.
 
 ### Added
 
+- The phone apps run speech, dictation, voice cloning and dubbing on the phone itself, offline once you download the models; pairing a computer is optional ([guide](docs/mobile.md)) (#2969)
 - Beta update channel: choose Stable or Beta under Settings → Updates; betas are `-beta.N` prereleases that never reach Stable users, and Docker gets matching `:beta` tags ([guide](docs/update-channels.md)) (#3175)
 
 - Preview iOS and Android companion apps: drive your own VoiceStudio from your phone (speak, voices and cloning, dubbing, dictation) after pairing by QR code; build from source for now ([guide](docs/mobile.md)) (#2965)
@@ -41,12 +42,13 @@ metadata and the backend fallback mirror it.
 - The GitHub button in the top bar is one Star pill with the live count, and the star fills gold on hover (#3216)
 - The sidebar is now a slim icon rail beside each section's own pane: Home and Clone get a Saved voices / Recent takes column, Design gets a Saved voices tab, and the full navigation is one click away (#3216)
 - Speed/quality changes finish as soon as they are saved, even while the clone controls are still loading (#3031)
+- Phone dub playback restores sound after dictation on iOS and keeps the video visible when switching results on Android (#2969)
+- Stereo WAV, CAF and AIFF references keep both channels when converted to mono on iOS (#2969)
 - Android dubbing errors remain visible when worker updates arrive while their receipt is being saved (#3031)
 - Speed / quality in the sidebar is a simple slider again; models and hardware fit open in a popover on hover, click or change, so the simplest view leaves the sidebar bottom free (#3031)
 - The Latest take panel is more compact: file details, render time and Check audio share one row (#3031)
 - The sidebar's Saved voices and Recent takes buttons both keep their labels instead of collapsing the inactive one to an icon (#3031)
 - On macOS full screen the sidebar logo moves into the freed corner, the compact rail drops its traffic-light gap (#3031)
-- Phone dub playback restores sound after dictation on iOS and keeps the video visible when switching results on Android (#2969)
 
 - iOS reserves storage across simultaneous model downloads and keeps saved speech paired with the submitted text (#2969)
 - TestFlight builds prepare the on-device inference runtimes before archiving the iPhone app (#2969)
@@ -77,6 +79,7 @@ metadata and the backend fallback mirror it.
 
 ### CI
 
+- Native licence notices keep their pinned hashes on Windows checkouts (#2969)
 - New `mobile-release` workflow builds signed Android and iOS apps and drafts a GitHub prerelease with the APK, AAB and IPAs (#2969)
 - The `mobile` workflow builds the pinned on-device runtimes for both apps (#2969)
 - Interactive release helper: pick stable or beta, draft or publish, and confirm by typing the tag (`scripts/release.py`) (#3187)
@@ -240,7 +243,6 @@ metadata and the backend fallback mirror it.
 - Beta update channel: choose Stable or Beta under Settings → Updates; betas are `-beta.N` prereleases that never reach Stable users, and Docker gets matching `:beta` tags ([guide](docs/update-channels.md)) (#3175)
 
 - Preview iOS and Android companion apps: drive your own VoiceStudio from your phone (speak, voices and cloning, dubbing, dictation) after pairing by QR code; build from source for now ([guide](docs/mobile.md)) (#2965)
-- The phone apps run speech, dictation, voice cloning and dubbing on the phone itself, offline once you download the models; pairing a computer is optional ([guide](docs/mobile.md)) (#2969)
 - Smart Fit speed limits: set the fastest and slowest speed dubbing may apply to a line, from the Timing section (#3026) — thanks @MoonDragon-MD!
 
 ### Fixed
