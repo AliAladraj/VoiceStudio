@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { PanelLeftCloseIcon, PanelLeftOpenIcon, type LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -56,6 +56,12 @@ export function SecondarySidebar({
   const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(false);
   const collapsed = controlledCollapsed ?? uncontrolledCollapsed;
   const [view, setView] = useState<'controls' | 'library'>('controls');
+  const [libraryVisited, setLibraryVisited] = useState(false);
+  const tabsId = useId();
+  const chooseView = (next: 'controls' | 'library') => {
+    if (next === 'library') setLibraryVisited(true);
+    setView(next);
+  };
   const showLibrary = library != null && view === 'library';
   // Notify from the event handler, never from inside a state updater: updaters
   // must stay pure (StrictMode runs them twice, which would double-fire this).
@@ -141,8 +147,34 @@ export function SecondarySidebar({
       {library != null && !collapsed && (
         <div
           role="tablist"
+          aria-label={title}
           data-slot="secondary-sidebar-tabs"
           className="flex shrink-0 gap-1 border-b border-border/45 px-2.5 py-2"
+          onKeyDown={(event) => {
+            if (event.altKey || event.ctrlKey || event.metaKey) return;
+            const tabs = [
+              ...event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+            ];
+            const current = tabs.findIndex((tab) => tab === event.target);
+            if (current < 0) return;
+            const forward =
+              getComputedStyle(event.currentTarget).direction === 'rtl'
+                ? 'ArrowLeft'
+                : 'ArrowRight';
+            const backward = forward === 'ArrowRight' ? 'ArrowLeft' : 'ArrowRight';
+            const next =
+              event.key === 'Home'
+                ? 0
+                : event.key === 'End'
+                  ? 1
+                  : event.key === forward || event.key === backward
+                    ? 1 - current
+                    : null;
+            if (next === null) return;
+            event.preventDefault();
+            chooseView(next === 0 ? 'controls' : 'library');
+            tabs[next]?.focus();
+          }}
         >
           {(
             [
@@ -154,8 +186,11 @@ export function SecondarySidebar({
               key={value}
               type="button"
               role="tab"
+              id={`${tabsId}-${value}`}
+              aria-controls={`${tabsId}-panel-${value}`}
               aria-selected={view === value}
-              onClick={() => setView(value)}
+              tabIndex={view === value ? 0 : -1}
+              onClick={() => chooseView(value)}
               className={cn(
                 'h-7 min-w-0 flex-1 truncate rounded-md px-2 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
                 view === value
@@ -168,13 +203,22 @@ export function SecondarySidebar({
           ))}
         </div>
       )}
-      {showLibrary && !collapsed && (
-        <div role="tabpanel" className="flex min-h-0 flex-1 flex-col">
-          {library}
+      {library != null && (
+        <div
+          role="tabpanel"
+          id={`${tabsId}-panel-library`}
+          aria-labelledby={`${tabsId}-library`}
+          hidden={!showLibrary || collapsed}
+          className={cn('flex min-h-0 flex-1 flex-col', (!showLibrary || collapsed) && 'hidden')}
+        >
+          {libraryVisited ? library : null}
         </div>
       )}
       <div
         hidden={collapsed || showLibrary}
+        role={library != null ? 'tabpanel' : undefined}
+        id={library != null ? `${tabsId}-panel-controls` : undefined}
+        aria-labelledby={library != null ? `${tabsId}-controls` : undefined}
         data-slot="secondary-sidebar-content"
         className={cn(
           'studio-scrollbar min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain p-3.5 text-[13px] [scroll-padding-block:0.875rem] [scrollbar-gutter:stable] [&>*]:min-w-0 [&>section]:w-full [&>section]:shrink-0 [&_button]:max-w-full [&_h2]:tracking-[-0.012em] [&_h3]:tracking-[-0.01em] [&_input]:max-w-full [&_label]:leading-5 [&_p]:leading-[1.55] [&_summary]:rounded-lg [&_summary]:outline-none [&_summary]:transition-[color,background-color] [&_summary]:duration-150 [&_summary:hover]:text-foreground [&_summary:focus-visible]:ring-2 [&_summary:focus-visible]:ring-ring/35 [&_textarea]:max-w-full',

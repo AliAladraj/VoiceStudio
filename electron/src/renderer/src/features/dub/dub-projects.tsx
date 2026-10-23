@@ -1,13 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { FilmIcon, FolderIcon, SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { apiJson, describeError } from '@/lib/api/client';
 import { cn } from '@/lib/utils';
 import { formatRelative } from '../clone/format';
-import { useLongformSession } from '../longform/longform-session';
+import { longformSession, useLongformSession } from '../longform/longform-session';
 import type { DubProject } from '../projects/project-format';
 import { openDubProject, useDubSession } from './dub-session';
 
@@ -21,7 +22,7 @@ interface Row {
 
 /**
  * Saved dub projects, in the Dub pane: the same projects the Projects page lists,
- * newest first. One tap opens a project in place; the footer link is the whole library.
+ * newest first. Confirming a selection opens it in place; the footer links to the whole library.
  */
 export function DubProjects() {
   const { t, i18n } = useTranslation();
@@ -30,6 +31,16 @@ export function DubProjects() {
   const longform = useLongformSession();
   const [search, setSearch] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [opening, setOpening] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<string | null>(null);
+  const request = useRef<AbortController | null>(null);
+  useEffect(
+    () => () => {
+      request.current?.abort();
+      request.current = null;
+    },
+    [],
+  );
   const query = useQuery({
     queryKey: ['projects'],
     queryFn: ({ signal }) => apiJson<DubProject[]>('/projects', { signal }),
@@ -51,14 +62,28 @@ export function DubProjects() {
     !!longform.active || !!dub.recovery || !['idle', 'editing', 'done'].includes(dub.phase);
 
   const open = async (id: string) => {
-    if (locked) return;
+    if (locked || request.current) return;
+    const controller = new AbortController();
+    request.current = controller;
+    setOpening(id);
     setError(null);
     try {
-      const project = await apiJson<DubProject>('/projects/' + encodeURIComponent(id));
-      if (!openDubProject(project)) throw new Error('Dubbing work is active');
+      const project = await apiJson<DubProject>('/projects/' + encodeURIComponent(id), {
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
+      if (longformSession.state.active || !openDubProject(project)) {
+        throw new Error(t('sidebarTools.wait'));
+      }
+      setConfirmation(null);
       await navigate({ to: '/dub' });
     } catch (failure) {
-      setError(describeError(failure));
+      if (!controller.signal.aborted) setError(describeError(failure));
+    } finally {
+      if (request.current === controller) {
+        request.current = null;
+        setOpening(null);
+      }
     }
   };
 
@@ -87,9 +112,10 @@ export function DubProjects() {
             <li key={row.id}>
               <button
                 type="button"
-                disabled={locked && !active}
+                disabled={opening !== null || locked}
+                aria-busy={opening === row.id}
                 aria-current={active ? 'true' : undefined}
-                onClick={() => void open(row.id)}
+                onClick={() => setConfirmation(row.id)}
                 className={cn(
                   'flex w-full min-w-0 items-center gap-2.5 rounded-lg px-2 py-1.5 text-start outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50',
                   active
@@ -111,6 +137,28 @@ export function DubProjects() {
                   )}
                 </span>
               </button>
+              {confirmation === row.id && (
+                <div className="space-y-2 rounded-md bg-muted/40 p-2 text-xs">
+                  <p>{t('projectActions.open', { name: row.name })}</p>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      disabled={locked || opening !== null}
+                      onClick={() => void open(row.id)}
+                    >
+                      {t('common.confirm')}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={opening !== null}
+                      onClick={() => setConfirmation(null)}
+                    >
+                      {t('common.cancel')}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </li>
           );
         })}

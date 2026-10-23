@@ -60,7 +60,7 @@ it('pins a footer outside the scrolling content and reports collapse so a page c
   expect(document.querySelector('[data-slot="secondary-sidebar-footer"]')).toBeNull();
 });
 
-it('switches between a page\'s controls and its section library, hiding the pinned footer in the library', () => {
+it("switches between a page's controls and its section library, hiding the pinned footer in the library", () => {
   render(
     <SecondarySidebar
       title="Design"
@@ -79,4 +79,54 @@ it('switches between a page\'s controls and its section library, hiding the pinn
   expect(screen.queryByRole('button', { name: 'Generate' })).toBeNull();
   fireEvent.click(screen.getByRole('tab', { name: 'Design' }));
   expect(screen.getByRole('button', { name: 'Generate' })).toBeVisible();
+});
+
+it.each([
+  ['ltr', 'ArrowRight'],
+  ['rtl', 'ArrowLeft'],
+])(
+  'selects section tabs with the keyboard in %s without discarding controls',
+  (direction, forward) => {
+    render(
+      <SecondarySidebar
+        title="Design"
+        icon={FilmIcon}
+        library={<div>Voices list</div>}
+        libraryLabel="Saved voices"
+      >
+        <input aria-label="Draft" defaultValue="My next voice" />
+      </SecondarySidebar>,
+    );
+    screen.getByRole('tablist').style.direction = direction;
+    const controls = screen.getByRole('tab', { name: 'Design' });
+    controls.focus();
+    fireEvent.keyDown(controls, { key: forward });
+    const library = screen.getByRole('tab', { name: 'Saved voices' });
+    expect(library).toHaveFocus();
+    expect(library).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText('Voices list')).toBeVisible();
+    fireEvent.keyDown(library, { key: 'Home' });
+    expect(screen.getByRole('textbox', { name: 'Draft' })).toHaveValue('My next voice');
+    expect(controls).toHaveFocus();
+  },
+);
+
+it('preserves edits in a section library when switching back to the controls', () => {
+  render(
+    <SecondarySidebar
+      title="Stories"
+      icon={FilmIcon}
+      library={<input aria-label="Project name" defaultValue="Draft" />}
+      libraryLabel="Projects"
+    >
+      <section>Controls</section>
+    </SecondarySidebar>,
+  );
+  fireEvent.click(screen.getByRole('tab', { name: 'Projects' }));
+  fireEvent.change(screen.getByRole('textbox', { name: 'Project name' }), {
+    target: { value: 'My story' },
+  });
+  fireEvent.click(screen.getByRole('tab', { name: 'Stories' }));
+  fireEvent.click(screen.getByRole('tab', { name: 'Projects' }));
+  expect(screen.getByRole('textbox', { name: 'Project name' })).toHaveValue('My story');
 });

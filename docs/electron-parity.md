@@ -94,4 +94,4 @@ In the compact rail, Voice, Stories and Dubbing open flyouts on mouse hover or c
 
 ## Sidebar expansion preference
 
-Settings → Appearance → Keep sidebar expanded persists the choice locally. It disables automatic compaction beside a section pane and on narrow windows; the default remains automatic, and a window up to 1200px wide always uses the rail. The explicit close control still works. The header toggle and sidebar share one state. A compact rail can reopen itself on every desktop platform, using the brand icon on Windows/Linux.
+Settings → Appearance → Keep sidebar expanded persists the choice locally. It disables automatic compaction beside a section pane and on narrow windows. With the default automatic setting, windows up to 1200px wide use the rail. The explicit close control still works. The header toggle and sidebar share one state. A compact rail can reopen itself on every desktop platform, using the brand icon on Windows/Linux.
