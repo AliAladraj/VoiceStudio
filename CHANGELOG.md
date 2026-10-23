@@ -82,6 +82,7 @@ metadata and the backend fallback mirror it.
 - Phone build resources keep notice hashes and localized text intact on Windows (#2969)
 - New `mobile-release` workflow builds signed Android and iOS apps and drafts a GitHub prerelease with the APK, AAB and IPAs (#2969)
 - The `mobile` workflow builds the pinned on-device runtimes for both apps (#2969)
+- The main test step runs in parallel with pytest-xdist, about 3 minutes faster per CI run (#3223)
 - Interactive release helper: pick stable or beta, draft or publish, and confirm by typing the tag (`scripts/release.py`) (#3187)
 - Release helper choices are arrow-key menus (#3190)
 - Desktop request-guard self-tests stay deterministic when app requests arrive during cleanup (#2676)
