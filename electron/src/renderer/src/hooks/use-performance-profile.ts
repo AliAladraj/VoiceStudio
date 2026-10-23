@@ -113,7 +113,7 @@ export function usePerformanceProfile() {
         void import('@/lib/store/clone-settings')
           .then(({ patchCloneSettings }) => {
             if (mirrorGeneration === cloneMirrorGeneration) {
-              patchCloneSettings({ steps: target.steps!, postprocess: target.postprocess! });
+              return patchCloneSettings({ steps: target.steps!, postprocess: target.postprocess! });
             }
           })
           .catch(() => {});
