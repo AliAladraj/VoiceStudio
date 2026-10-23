@@ -26,6 +26,7 @@ metadata and the backend fallback mirror it.
 
 ### Fixed
 
+- The sidebar's Saved voices and Recent takes buttons both keep their labels instead of collapsing the inactive one to an icon (#3031)
 - On macOS full screen the sidebar logo moves into the freed corner, the compact rail drops its traffic-light gap (#3031)
 
 - Bug reports no longer risk freezing the app while looking for your tools: the Node-version folder scan now runs off the main thread (#3180)
