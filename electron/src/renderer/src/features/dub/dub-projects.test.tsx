@@ -9,7 +9,7 @@ const state = vi.hoisted(() => ({
     active: null as string | null,
     drafts: { stories: { projectId: null }, audiobook: { projectId: 'b2' } },
   },
-  dub: { project: null as { id: string } | null, phase: 'idle', recovery: null },
+  dub: { project: null as { id: string } | null, phase: 'idle', recovery: null, instruct: '' },
   openDub: vi.fn(() => true),
   readProject: vi.fn<(path: string, options?: { signal?: AbortSignal }) => Promise<unknown>>(),
 }));
@@ -37,6 +37,11 @@ vi.mock('../longform/longform-session', () => ({
 }));
 vi.mock('./dub-session', () => ({
   useDubSession: () => state.dub,
+  dubSession: {
+    get state() {
+      return state.dub;
+    },
+  },
   openDubProject: state.openDub,
 }));
 import { DubProjects } from './dub-projects';
@@ -66,7 +71,7 @@ beforeEach(() => {
       state.dubs.find((p) => path.endsWith((p as { id: string }).id)),
     );
   state.longform.active = null;
-  state.dub = { project: { id: 'd2' }, phase: 'idle', recovery: null };
+  state.dub = { project: { id: 'd2' }, phase: 'idle', recovery: null, instruct: '' };
   state.dubs = [
     { id: 'd1', name: 'Launch video', updated_at: 1_700_000_000 },
     { id: 'd2', name: 'Podcast intro', updated_at: 1_700_000_100 },
@@ -91,7 +96,7 @@ it('opens a dub project into the Dub workspace', async () => {
 });
 
 it('waits while dubbing work is running', async () => {
-  state.dub = { project: null, phase: 'dubbing', recovery: null };
+  state.dub = { project: null, phase: 'dubbing', recovery: null, instruct: '' };
   renderList();
   expect(await screen.findByRole('button', { name: /Launch video/ })).toBeDisabled();
 });
@@ -167,6 +172,21 @@ it('rechecks active work after a pending project read', async () => {
   expect(await screen.findByRole('alert')).toHaveTextContent('sidebarTools.wait');
   expect(state.openDub).not.toHaveBeenCalled();
   expect(state.navigate).not.toHaveBeenCalled();
+});
+
+it('requires a fresh confirmation if the working draft changes during a load', async () => {
+  const resolve = pauseProjectRead();
+  renderList();
+  await confirmProject(/Launch video/);
+  state.dub = { ...state.dub, instruct: 'Keep these new directions' };
+  await act(async () => resolve(state.dubs[0]));
+  expect(state.openDub).not.toHaveBeenCalled();
+  expect(state.navigate).not.toHaveBeenCalled();
+  expect(await screen.findByRole('alert')).toHaveTextContent('projects.draft_changed');
+  expect(screen.getByRole('button', { name: 'common.confirm' })).toBeEnabled();
+  state.readProject.mockResolvedValueOnce(state.dubs[0]);
+  fireEvent.click(screen.getByRole('button', { name: 'common.confirm' }));
+  await waitFor(() => expect(state.navigate).toHaveBeenCalledWith({ to: '/dub' }));
 });
 
 it('localizes the error when dubbing work starts during a project load', async () => {

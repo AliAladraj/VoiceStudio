@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { formatRelative } from '../clone/format';
 import { longformSession, useLongformSession } from '../longform/longform-session';
 import type { DubProject } from '../projects/project-format';
-import { openDubProject, useDubSession } from './dub-session';
+import { dubSession, openDubProject, useDubSession } from './dub-session';
 
 const SEARCH_ABOVE = 8;
 
@@ -71,6 +71,7 @@ export function DubProjects({ active = true }: { active?: boolean }) {
 
   const open = async (id: string) => {
     if (!active || locked || request.current) return;
+    const snapshot = dubSession.state;
     const controller = new AbortController();
     request.current = controller;
     setOpening(id);
@@ -80,7 +81,13 @@ export function DubProjects({ active = true }: { active?: boolean }) {
         signal: controller.signal,
       });
       if (controller.signal.aborted) return;
-      if (longformSession.state.active || !openDubProject(project)) {
+      if (longformSession.state.active) {
+        throw new Error(t('sidebarTools.wait'));
+      }
+      if (dubSession.state !== snapshot) {
+        throw new Error(t('projects.draft_changed'));
+      }
+      if (!openDubProject(project)) {
         throw new Error(t('sidebarTools.wait'));
       }
       setConfirmation(null);
