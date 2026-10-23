@@ -42,6 +42,7 @@ metadata and the backend fallback mirror it.
 - Stories, Audiobook and Dubbing show their saved projects in a Projects tab beside the controls, so your files are one tap away wherever you work (#3216)
 - The GitHub button in the top bar is one Star pill with the live count, and the star fills gold on hover (#3216)
 - The sidebar is now a slim icon rail beside each section's own pane: Home and Clone get a Saved voices / Recent takes column, Design gets a Saved voices tab, and the full navigation is one click away (#3216)
+- App icon, tray icons and in-app logo no longer show a black band behind the waveform (#3221)
 - Speed/quality changes finish as soon as they are saved, even while the clone controls are still loading (#3031)
 - Phone dub playback restores sound after dictation on iOS and keeps the video visible when switching results on Android (#2969)
 - Stereo reference files and dictation inputs keep both channels when converted to mono on iOS (#2969)
