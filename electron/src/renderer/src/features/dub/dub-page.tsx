@@ -1012,7 +1012,7 @@ export function DubPage() {
           icon={FilmIcon}
           size="spacious"
           variant="controls"
-          library={<DubProjects />}
+          library={(active) => <DubProjects active={active} />}
           libraryLabel={t('projects.title')}
           className="flex flex-col gap-2"
         >

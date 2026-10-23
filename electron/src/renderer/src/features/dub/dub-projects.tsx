@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,7 @@ interface Row {
  * Saved dub projects, in the Dub pane: the same projects the Projects page lists,
  * newest first. Confirming a selection opens it in place; the footer links to the whole library.
  */
-export function DubProjects() {
+export function DubProjects({ active = true }: { active?: boolean }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dub = useDubSession();
@@ -34,6 +34,14 @@ export function DubProjects() {
   const [opening, setOpening] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<string | null>(null);
   const request = useRef<AbortController | null>(null);
+  useLayoutEffect(() => {
+    if (!active) {
+      request.current?.abort();
+      request.current = null;
+      setOpening(null);
+      setConfirmation(null);
+    }
+  }, [active]);
   useEffect(
     () => () => {
       request.current?.abort();
@@ -62,7 +70,7 @@ export function DubProjects() {
     !!longform.active || !!dub.recovery || !['idle', 'editing', 'done'].includes(dub.phase);
 
   const open = async (id: string) => {
-    if (locked || request.current) return;
+    if (!active || locked || request.current) return;
     const controller = new AbortController();
     request.current = controller;
     setOpening(id);

@@ -130,3 +130,24 @@ it('preserves edits in a section library when switching back to the controls', (
   fireEvent.click(screen.getByRole('tab', { name: 'Projects' }));
   expect(screen.getByRole('textbox', { name: 'Project name' })).toHaveValue('My story');
 });
+
+it('reports a retained library as inactive when its tab is hidden', () => {
+  render(
+    <SecondarySidebar
+      title="Dub"
+      icon={FilmIcon}
+      library={(active) => <input aria-label="Load active" value={String(active)} readOnly />}
+      libraryLabel="Projects"
+    >
+      <section>Controls</section>
+    </SecondarySidebar>,
+  );
+  fireEvent.click(screen.getByRole('tab', { name: 'Projects' }));
+  const field = screen.getByRole('textbox', { name: 'Load active' });
+  expect(field).toHaveValue('true');
+  fireEvent.click(screen.getByRole('tab', { name: 'Dub' }));
+  expect(field).toHaveValue('false');
+  fireEvent.click(screen.getByRole('tab', { name: 'Projects' }));
+  expect(screen.getByRole('textbox', { name: 'Load active' })).toBe(field);
+  expect(field).toHaveValue('true');
+});

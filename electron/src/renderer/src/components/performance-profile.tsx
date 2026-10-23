@@ -250,13 +250,9 @@ export function PerformanceProfile({
       : plan?.status === 'unknown'
         ? CircleHelpIcon
         : CircleGaugeIcon;
-  const TierIcon = [GaugeIcon, SparkleIcon, SparklesIcon, CrownIcon][
-    Math.max(0, Math.min(3, tiers.indexOf((shownTier ?? 'balanced') as (typeof tiers)[number])))
-  ];
-  const sliderPosition = Math.max(
-    0,
-    tiers.indexOf((shownTier ?? 'balanced') as (typeof tiers)[number]),
-  );
+  const sliderTier = (shownTier === 'auto' ? plan?.resolved : shownTier) ?? 'balanced';
+  const sliderPosition = Math.max(0, tiers.indexOf(sliderTier as (typeof tiers)[number]));
+  const TierIcon = [GaugeIcon, SparkleIcon, SparklesIcon, CrownIcon][Math.min(3, sliderPosition)];
   const panel = (
     <PopoverContent
       side="inline-end"

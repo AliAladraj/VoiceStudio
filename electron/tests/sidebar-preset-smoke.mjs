@@ -15,6 +15,10 @@ let currentTier = 'fast';
 let fail = false;
 let releaseSave;
 let releaseEngines;
+let releaseAutoSave;
+const autoSaveGate = new Promise((resolve) => {
+  releaseAutoSave = resolve;
+});
 const saveGate = new Promise((resolve) => {
   releaseSave = resolve;
 });
@@ -83,7 +87,8 @@ try {
       if (request.method() === 'PUT') {
         writes.push(request.postDataJSON());
         if (fail) return route.fulfill({ status: 409, json: { detail: 'Test: engine busy' } });
-        await saveGate;
+        if (request.postDataJSON().tier === 'auto') await autoSaveGate;
+        else await saveGate;
         changed = true;
         currentTier = request.postDataJSON().tier;
       }
@@ -193,8 +198,12 @@ try {
   );
   fail = false;
   await footer.getByRole('button', { name: 'Auto', exact: true }).click();
+  await expect(slider).toBeDisabled();
+  await expect(slider).toHaveAttribute('aria-valuetext', 'Balanced');
+  releaseAutoSave();
   await footer.getByRole('button', { name: 'Auto', exact: true, pressed: true }).waitFor();
   await expect(slider).toBeEnabled();
+  await expect(slider).toHaveAttribute('aria-valuetext', 'Quality');
   // The popover opened with the tier change and polled live usage; start counting afresh once closed.
   await page.keyboard.press('Escape');
   await popup.waitFor({ state: 'hidden' });
@@ -246,6 +255,7 @@ try {
     'Speed/quality tiers: confirmed model feedback, loading, rollback, Auto selection and hardware explanation passed; all writes mocked.',
   );
 } finally {
+  releaseAutoSave();
   releaseSave();
   releaseEngines();
   await browser.close();

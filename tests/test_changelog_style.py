@@ -127,10 +127,14 @@ def lint_changelog(text):
                 violations.append(
                     f"{heading}: expected 3–5 Highlight bullets, found {highlight_count}."
                 )
+        seen_subsections = set()
         last_bullet = None  # (lineno, text) of the most recent bullet
         for lineno, line in body:
             if line.startswith("### "):
                 subsection = line[4:].strip()
+                if version == "Unreleased" and subsection in seen_subsections:
+                    violations.append(f"line {lineno}: duplicate subsection ### {subsection} in Unreleased")
+                seen_subsections.add(subsection)
                 last_bullet = None
                 continue
             if not line.strip():
@@ -179,6 +183,14 @@ def lint_changelog(text):
                 )
             # Preamble prose before the first ### (release intro) is allowed.
     return violations
+
+
+def test_unreleased_rejects_repeated_entry_subsections():
+    text = ("## [Unreleased]\n\n**Highlights**\n\n- A change\n\n"
+            "### Changed\n\n- First change (#3216)\n\n"
+            "### Fixed\n\n- A fix (#3216)\n\n"
+            "### Changed\n\n- Another change (#3031)\n")
+    assert any("duplicate subsection" in item for item in lint_changelog(text))
 
 
 def test_repo_changelog_is_quiet_style():

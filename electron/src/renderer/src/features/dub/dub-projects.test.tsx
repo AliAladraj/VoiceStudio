@@ -41,14 +41,16 @@ vi.mock('./dub-session', () => ({
 }));
 import { DubProjects } from './dub-projects';
 
-const renderList = () =>
-  render(
-    <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
-    >
-      <DubProjects />
-    </QueryClientProvider>,
+const renderList = () => {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const content = (active: boolean) => (
+    <QueryClientProvider client={client}>
+      <DubProjects active={active} />
+    </QueryClientProvider>
   );
+  const view = render(content(true));
+  return { ...view, setActive: (active: boolean) => view.rerender(content(active)) };
+};
 
 async function confirmProject(name: RegExp) {
   fireEvent.click(await screen.findByRole('button', { name }));
@@ -140,6 +142,17 @@ it('does not open or navigate after leaving the projects pane during a load', as
   const view = renderList();
   await confirmProject(/Launch video/);
   view.unmount();
+  await act(async () => resolve(state.dubs[0]));
+  expect(state.openDub).not.toHaveBeenCalled();
+  expect(state.navigate).not.toHaveBeenCalled();
+});
+
+it('cancels a load when its tab hides, even if the user returns before it finishes', async () => {
+  const resolve = pauseProjectRead();
+  const view = renderList();
+  await confirmProject(/Launch video/);
+  view.setActive(false);
+  view.setActive(true);
   await act(async () => resolve(state.dubs[0]));
   expect(state.openDub).not.toHaveBeenCalled();
   expect(state.navigate).not.toHaveBeenCalled();

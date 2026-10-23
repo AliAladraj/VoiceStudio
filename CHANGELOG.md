@@ -7,7 +7,6 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 metadata and the backend fallback mirror it.
 
 ## [Unreleased]
-
 **Highlights**
 
 - Preview iOS and Android companion apps for your own VoiceStudio
@@ -17,12 +16,20 @@ metadata and the backend fallback mirror it.
 
 - Phone apps now use the app ID `sh.voicestudio.mobile`; a preview build installed before installs alongside as a new app, so pair it again and remove the old one (#3194)
 
+- The sponsor footer is gone from the app; sponsored integrations keep a Featured badge on their card in Integrations (#3031)
+
 ### Added
 
 - Beta update channel: choose Stable or Beta under Settings → Updates; betas are `-beta.N` prereleases that never reach Stable users, and Docker gets matching `:beta` tags ([guide](docs/update-channels.md)) (#3175)
 
 - Preview iOS and Android companion apps: drive your own VoiceStudio from your phone (speak, voices and cloning, dubbing, dictation) after pairing by QR code; build from source for now ([guide](docs/mobile.md)) (#2965)
 - Smart Fit speed limits: set the fastest and slowest speed dubbing may apply to a line, from the Timing section (#3026) — thanks @MoonDragon-MD!
+
+### Docs
+
+- `SPONSORS.md` now states what each sponsorship tier gives, when recognition starts, and what sponsorship does not buy, and the README and inquiry form point to it (#3172)
+- OmniVoice GGUF docs state that the installers do not ship its native binary yet (#3026) — thanks @DestinyQJY!
+- Contributor guides and the pull request template explain how to sign the CLA before opening a first pull request (#2676)
 
 ### Fixed
 
@@ -47,32 +54,14 @@ metadata and the backend fallback mirror it.
 - Generated speech no longer starts and ends with silence, and `[pause]` markers give exactly the pause you asked for (Raw preset and explicit durations untouched) (#3080)
 - Engine sidecars no longer load PyTorch just to answer the Test Engine ping, and a failed test logs its reason locally (#3026) — thanks @tekay-de!
 
-### Fixed
-
 - Windows runtime refresh no longer fails with `EPERM` on a locked backend folder (OneDrive, antivirus): it updates the files in place; the missing-Python-environment message now names the exact folder and tells non-checkout installs to use the installer (#3023) — thanks @afraniohugo, @javalovelinux-cmd and @eduardpp00!
-
-### Fixed
 
 - The install location chosen in first-run setup now also holds your data, model cache and temp files instead of quietly filling `C:`, and the setup screen shows each path (#2971, #3035)
 - Supertonic-3's preset voices can be picked in the voice controls and are used for generation (#2938, #3035)
 
 - `OMNIVOICE_ENGINES_DIR` moves engine venvs and the audio.cpp runtime to another drive; the default location is unchanged (#3024)
 
-### Fixed
-
 - The installed app now rebuilds a Python environment that antivirus or disk cleanup removed, once per launch with the usual setup progress, instead of stopping at a setup error; your voices and projects are untouched (#3032) — thanks @afraniohugo and @javalovelinux-cmd!
-
-### Changed
-
-- The sponsor footer is gone from the app; sponsored integrations keep a Featured badge on their card in Integrations (#3031)
-
-### Docs
-
-- `SPONSORS.md` now states what each sponsorship tier gives, when recognition starts, and what sponsorship does not buy, and the README and inquiry form point to it (#3172)
-- OmniVoice GGUF docs state that the installers do not ship its native binary yet (#3026) — thanks @DestinyQJY!
-- Contributor guides and the pull request template explain how to sign the CLA before opening a first pull request (#2676)
-
-### Fixed
 
 - macOS builds without a Developer ID are now signed ad hoc so the bundle signature is valid, and the shell installer clears quarantine, repairs an invalid signature of older releases, names an unreadable disk image, and tells Intel Mac users the backend needs Apple Silicon (#3033, #2763, #2829, #2681)
 - A "Generation failed" log line now says where it was raised and which error caused it, and the out-of-memory advice mentions picking another GPU, so these reports can be told apart (#2895, #2684, #2666, #2626, #2622, #2580, #3034)

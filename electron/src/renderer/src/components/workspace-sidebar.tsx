@@ -44,8 +44,8 @@ export function SecondarySidebar({
   meta?: ReactNode;
   /** Pinned below the scrolling content — never scrolls out of view. */
   footer?: ReactNode;
-  /** The section's saved items (voices, takes, files). Adds a second tab beside the page's controls. */
-  library?: ReactNode;
+  /** Saved items beside the controls. A render callback receives visibility so retained panes can cancel hidden work. */
+  library?: ReactNode | ((active: boolean) => ReactNode);
   libraryLabel?: string;
   /** Controls the collapsed state when the parent owns a shared pane shortcut. */
   collapsed?: boolean;
@@ -211,7 +211,11 @@ export function SecondarySidebar({
           hidden={!showLibrary || collapsed}
           className={cn('flex min-h-0 flex-1 flex-col', (!showLibrary || collapsed) && 'hidden')}
         >
-          {libraryVisited ? library : null}
+          {libraryVisited
+            ? typeof library === 'function'
+              ? library(showLibrary && !collapsed)
+              : library
+            : null}
         </div>
       )}
       <div

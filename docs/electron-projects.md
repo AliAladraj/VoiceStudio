@@ -23,7 +23,8 @@ dub projects, and Clone, Home and Design the saved voices, each in the workspace
 Section tabs support arrow-key navigation (including right-to-left layouts), Home and End.
 Switching tabs keeps unfinished project-name edits. Opening a saved dub asks for confirmation,
 waits for its load before another selection, and rechecks running work before replacing the
-draft. Leaving the workspace cancels a pending load instead of navigating back afterward.
+draft. Returning to the controls tab, collapsing the pane or leaving the workspace cancels
+a pending load so its response cannot replace newer edits.
 
 Opening a book or story restores its saved draft after confirmation; deletion detaches the draft
 without removing generated media. Inline rename changes only the saved name: dubbing uses the
