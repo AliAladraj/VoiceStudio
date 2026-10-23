@@ -87,6 +87,7 @@ metadata and the backend fallback mirror it.
 
 ### CI
 
+- iOS consent checks drag the native sheet handle before verifying that passive dismissal replaces a prior opt-in with No (#3216)
 - Parallel tests use stable names for generated audio samples so WAV timestamps cannot break test collection (#3216)
 - Android release and Play builds share an increasing version code to prevent reused or decreasing build numbers (#2969)
 - Phone build resources keep notice hashes and localized text intact on Windows (#2969)

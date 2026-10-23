@@ -125,6 +125,10 @@ Local validation on 2026-10-18 passes the Swift 6 package suite (optional infere
 
 Contract interpretations: Get starts a queue with separate per-model acceptance; declining or dismissing stops the unstarted remainder while already authorized transfers continue. The compact card links to Models through its label. The optional catalogue `licence.terms` contains the full disclosure and is displayed when supplied; the fingerprint remains catalogue-authoritative. HF's signed delivery CDNs are allowed only within its HF-owned delivery domains, because normal model resolve URLs redirect there. Downloads resume at verified range boundaries rather than URLSession opaque resume blobs. The pinned llama prebuilt lacks a simulator slice, so that slice is built from the same pinned source. Missing transitive SHA-256 fields in shared pins are documented in the native README. For dubbing, “segments + timestamps” means one timed speech envelope per bounded Whisper window, matching Android; it does not imply diarization. A remembered computer route falls back while unpaired because its segmented control is hidden. A cancelled dub stays resumable; deletion is explicit. iOS background resume is a user-started Resume after foregrounding, not guaranteed background compute. The real iOS video regression verifies AVC/AAC muxing and compressed-source extraction; physical-device codec behavior remains a separate check.
 
+Consent dismissal automation drags the native sheet handle across the screen,
+then checks that the sheet closes and a previous opt-in becomes No in Settings.
+This avoids mistaking a short scroll on the title for a sheet dismissal.
+
 ## Electron-style mobile Home
 
 Home is the first workspace after consent, using Electron's bundled signal-field

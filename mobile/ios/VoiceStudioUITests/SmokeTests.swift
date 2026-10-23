@@ -106,8 +106,13 @@ final class SmokeTests: XCTestCase {
         XCTAssertEqual(app.switches["settings.analytics"].value as? String, "1")
         app.terminate(); app.launch()
         XCTAssertTrue(app.buttons["consent.no"].waitForExistence(timeout: 10))
-        // Swipe the sheet down, as a person would.
-        app.staticTexts["consent.title"].swipeDown(velocity: .fast)
+        // Drag the native handle across the sheet. A short swipe on the title
+        // scrolls its content and can leave the consent sheet expanded.
+        let grabber = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", "Grabber")).firstMatch
+        XCTAssertTrue(grabber.waitForExistence(timeout: 3))
+        let start = grabber.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+        start.press(forDuration: 0.1, thenDragTo: end)
         // The phone works on its own, so dismissing the sheet lands on Home (which sits behind the sheet).
         XCTAssertTrue(app.buttons["consent.no"].waitForNonExistence(timeout: 8))
         XCTAssertTrue(app.navigationBars["Home"].waitForExistence(timeout: 5))
