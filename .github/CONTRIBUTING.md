@@ -288,6 +288,10 @@ starting their short test deadline, and join released workers during cleanup.
 Cover delayed startup separately so runner scheduling does not masquerade as a
 native-call timeout or leak work into later tests.
 
+Give generated binary parameters stable test names with `ids=`. Audio encoders
+may embed timestamps, which otherwise make parallel pytest workers collect
+different test IDs for the same cases.
+
 ```bash
 # Run the backend suites CI runs (kept separate: backend/tests is isolated)
 uv run pytest tests/ -q

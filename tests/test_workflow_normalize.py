@@ -48,7 +48,8 @@ def test_silence_is_not_amplified(client):
     assert not np.any(audio)
 
 
-@pytest.mark.parametrize('data', [b'not audio', wav(np.array([np.nan, np.inf]))])
+@pytest.mark.parametrize('data', [b'not audio', wav(np.array([np.nan, np.inf]))],
+                         ids=['invalid-container', 'non-finite-samples'])
 def test_rejects_invalid_samples_before_marking(client, data):
     client, marker = client
     response = client.post('/tools/normalize-speech', files={'audio': ('bad.wav', data)})

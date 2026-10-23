@@ -87,6 +87,7 @@ metadata and the backend fallback mirror it.
 
 ### CI
 
+- Parallel tests use stable names for generated audio samples so WAV timestamps cannot break test collection (#3216)
 - Android release and Play builds share an increasing version code to prevent reused or decreasing build numbers (#2969)
 - Phone build resources keep notice hashes and localized text intact on Windows (#2969)
 - New `mobile-release` workflow builds signed Android and iOS apps and drafts a GitHub prerelease with the APK, AAB and IPAs (#2969)
