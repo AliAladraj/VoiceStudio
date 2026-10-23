@@ -38,7 +38,9 @@ AGP 8.12.0, Kotlin 2.2.21 and direct dependencies are pinned in the wrapper and
 `gradle/libs.versions.toml`. The wrapper was generated using installed Gradle
 9.8.1. Compilation runs inside Gradle to avoid Kotlin daemon files outside
 sandbox writable directories; parallel workers are capped for this shared host.
-The version name/code are derived at configuration time from root `package.json`.
+The version name and default local version code come from root `package.json`.
+Signed Android release and Play builds override the code with shared UTC seconds
+since 2020-01-01 and run serially; see [the release guide](../../docs/mobile.md#releasing).
 
 The adaptive launcher icon (including its themed monochrome layer) and launch
 screen are generated during Gradle preBuild from `docs/logo.svg` and the default

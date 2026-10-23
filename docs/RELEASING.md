@@ -199,8 +199,10 @@ It does not replace the post-release verification below; run it every time.
 
 Phone apps ship on their own `mobile-v*` tags through the `mobile-release`
 workflow (a draft GitHub prerelease with the APK, AAB and IPAs; store uploads use
-the TestFlight and Play internal workflows). The version is the root `package.json` version and each run's
-number is the store build number. Setup, secrets and sideloading: `docs/mobile.md`
+the TestFlight and Play internal workflows). The version is the root `package.json` version.
+Both signed Android workflows share UTC seconds since 2020-01-01 as the build
+code and serialize their builds; iOS uses the workflow run number and attempt.
+Setup, secrets and sideloading: `docs/mobile.md`
 → Releasing. Publishing the draft and promoting the store builds are manual.
 
 ## Beta channel
