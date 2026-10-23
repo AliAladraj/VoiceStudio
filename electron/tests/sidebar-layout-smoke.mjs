@@ -19,10 +19,18 @@ try {
   await page.goto(ui + '/#/clone');
   const sidebar = page.locator('aside').first();
   const chooseView = async (name) => {
-    await sidebar
-      .getByRole('radiogroup', { name: 'Tool settings', exact: true })
-      .getByRole('radio', { name, exact: true })
-      .click();
+    // The view switch lives in the popover that the speed/quality label opens.
+    const group = page.getByRole('radiogroup', { name: 'Tool settings', exact: true });
+    if (!(await group.isVisible())) {
+      await sidebar.locator('[data-slot=performance-trigger]').click();
+      await group.waitFor();
+    }
+    await group.getByRole('radio', { name, exact: true }).click();
+    const popup = page.locator('[data-slot=popover-content]');
+    if (await popup.count()) {
+      await page.keyboard.press('Escape');
+      await popup.waitFor({ state: 'hidden' });
+    }
   };
   const navigation = sidebar.getByRole('navigation', { name: 'Workspaces', exact: true });
   await navigation.waitFor();
