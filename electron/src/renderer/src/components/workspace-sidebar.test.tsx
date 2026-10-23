@@ -59,3 +59,24 @@ it('pins a footer outside the scrolling content and reports collapse so a page c
   expect(onCollapsedChange).toHaveBeenLastCalledWith(true);
   expect(document.querySelector('[data-slot="secondary-sidebar-footer"]')).toBeNull();
 });
+
+it('switches between a page\'s controls and its section library, hiding the pinned footer in the library', () => {
+  render(
+    <SecondarySidebar
+      title="Design"
+      icon={FilmIcon}
+      library={<div>Voices list</div>}
+      libraryLabel="Saved voices"
+      footer={<button type="button">Generate</button>}
+    >
+      <section>Controls body</section>
+    </SecondarySidebar>,
+  );
+  expect(screen.getByRole('tab', { name: 'Design' })).toHaveAttribute('aria-selected', 'true');
+  expect(screen.queryByText('Voices list')).toBeNull();
+  fireEvent.click(screen.getByRole('tab', { name: 'Saved voices' }));
+  expect(screen.getByText('Voices list')).toBeVisible();
+  expect(screen.queryByRole('button', { name: 'Generate' })).toBeNull();
+  fireEvent.click(screen.getByRole('tab', { name: 'Design' }));
+  expect(screen.getByRole('button', { name: 'Generate' })).toBeVisible();
+});

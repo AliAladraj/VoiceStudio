@@ -11,7 +11,7 @@ import {
   ChevronRightIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useId, useState, type ReactNode } from 'react';
+import { useId, useRef, useState, type ReactNode } from 'react';
 import { Slider } from '@base-ui/react/slider';
 import { DirectionProvider } from '@base-ui/react/direction-provider';
 import { useQuery } from '@tanstack/react-query';
@@ -66,6 +66,8 @@ export function PerformanceProfile({
   const groupId = useId();
   const [draft, setDraft] = useState<number | null>(null);
   const [hardwareOpen, setHardwareOpen] = useState(false);
+  // The popover opens beside the whole control, never over its own Auto toggle.
+  const blockRef = useRef<HTMLDivElement>(null);
   const busy =
     profile.isSaving ||
     !isBackendReachable(backend.stage) ||
@@ -249,6 +251,9 @@ export function PerformanceProfile({
       : plan?.status === 'unknown'
         ? CircleHelpIcon
         : CircleGaugeIcon;
+  const TierIcon = [GaugeIcon, SparkleIcon, SparklesIcon, CrownIcon][
+    Math.max(0, Math.min(3, tiers.indexOf((shownTier ?? 'balanced') as (typeof tiers)[number])))
+  ];
   const sliderPosition = Math.max(
     0,
     tiers.indexOf((shownTier ?? 'balanced') as (typeof tiers)[number]),
@@ -256,6 +261,7 @@ export function PerformanceProfile({
   const panel = (
     <PopoverContent
       side="right"
+      anchor={blockRef}
       className="max-h-[min(42rem,80dvh)] w-80 max-w-[calc(100vw-1rem)] space-y-3 overflow-y-auto p-4 text-xs"
     >
       {extra}
@@ -329,7 +335,7 @@ export function PerformanceProfile({
     </PopoverContent>
   );
   const body = (
-    <div className="min-w-0 space-y-1.5 py-1.5">
+    <div ref={blockRef} className="min-w-0 space-y-1.5 py-1.5">
       <div className="flex items-center justify-between gap-2 px-1">
         {popoverMode ? (
           <PopoverTrigger
@@ -338,50 +344,56 @@ export function PerformanceProfile({
             render={
               <button
                 type="button"
+                data-slot="performance-trigger"
                 aria-label={hardwareSummary || undefined}
-                className="group/hw flex min-w-0 items-center gap-1 rounded px-1 py-0.5 text-start text-[11px] text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                className="group/hw flex min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-xs whitespace-nowrap text-foreground/85 outline-none hover:bg-sidebar-accent/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
             }
           >
-            <span id={groupId}>
+            <TierIcon className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
+            {/* The control's name for assistive tech; sighted users read the tier and its icon. */}
+            <span id={groupId} className="sr-only">
               {t(supported ? 'performanceProfile.title' : 'modelSettings.unavailable')}
             </span>
-            {supported && shownTier && shownTier !== 'auto' && (
-              <span className="font-medium text-foreground/80">
-                {t('performanceProfile.' + shownTier)}
-              </span>
-            )}
+            <span className="min-w-0 truncate font-medium">
+              {shownTier && shownTier !== 'auto'
+                ? t('performanceProfile.' + shownTier)
+                : t('performanceProfile.auto')}
+            </span>
             <ChevronRightIcon
-              className="size-3 shrink-0 opacity-60 transition-transform group-hover/hw:translate-x-0.5 rtl:rotate-180 motion-reduce:transition-none"
+              className="size-3 shrink-0 opacity-50 transition-transform group-hover/hw:translate-x-0.5 rtl:rotate-180 motion-reduce:transition-none"
               aria-hidden="true"
             />
           </PopoverTrigger>
         ) : (
-        <span className="min-w-0 truncate text-[11px] text-muted-foreground">
-          <span id={groupId}>
-            {t(supported ? 'performanceProfile.title' : 'modelSettings.unavailable')}
-          </span>
-          {supported && shownTier && shownTier !== 'auto' && (
-            <span className="ms-1.5 font-medium text-foreground/80">
-              {t('performanceProfile.' + shownTier)}
+          <span className="min-w-0 truncate text-[11px] whitespace-nowrap text-muted-foreground">
+            <span id={groupId}>
+              {t(supported ? 'performanceProfile.title' : 'modelSettings.unavailable')}
             </span>
-          )}
-        </span>
+            {supported && shownTier && shownTier !== 'auto' && (
+              <span className="ms-1.5 font-medium text-foreground/80">
+                {t('performanceProfile.' + shownTier)}
+              </span>
+            )}
+          </span>
         )}
         <button
           type="button"
           aria-pressed={autoOn}
+          aria-label={popoverMode ? t('performanceProfile.auto') : undefined}
+          title={popoverMode ? t('performanceProfile.auto') : undefined}
           disabled={disabled}
           onClick={() => void choose(autoOn ? (plan?.resolved ?? 'balanced') : 'auto')}
           className={cn(
-            'inline-flex h-6 items-center gap-1 rounded-full px-2 text-[11px] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50',
+            'inline-flex h-6 shrink-0 items-center justify-center gap-1 rounded-full text-[11px] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50',
+            popoverMode ? 'w-6' : 'px-2',
             autoOn
               ? 'bg-primary/15 text-primary ring-1 ring-inset ring-primary/30'
               : 'text-muted-foreground ring-1 ring-inset ring-border/60 hover:text-foreground',
           )}
         >
           <WandSparklesIcon className="size-3" aria-hidden="true" />
-          {t('performanceProfile.auto')}
+          {!popoverMode && t('performanceProfile.auto')}
         </button>
       </div>
       <DirectionProvider direction={i18n.dir(i18n.language)}>

@@ -30,6 +30,8 @@ export function SecondarySidebar({
   variant = 'controls',
   meta,
   footer,
+  library,
+  libraryLabel,
   onCollapsedChange,
 }: {
   title: string;
@@ -41,11 +43,16 @@ export function SecondarySidebar({
   meta?: ReactNode;
   /** Pinned below the scrolling content — never scrolls out of view. */
   footer?: ReactNode;
+  /** The section's saved items (voices, takes, files). Adds a second tab beside the page's controls. */
+  library?: ReactNode;
+  libraryLabel?: string;
   /** Lets the page re-home the footer's content while the pane is collapsed. */
   onCollapsedChange?: (collapsed: boolean) => void;
 }) {
   const { t } = useTranslation();
   const [collapsed, setCollapsedState] = useState(false);
+  const [view, setView] = useState<'controls' | 'library'>('controls');
+  const showLibrary = library != null && view === 'library';
   // Notify from the event handler, never from inside a state updater: updaters
   // must stay pure (StrictMode runs them twice, which would double-fire this).
   const setCollapsed = (next: boolean | ((value: boolean) => boolean)) => {
@@ -127,19 +134,54 @@ export function SecondarySidebar({
           {collapsed ? <PanelLeftOpenIcon /> : <PanelLeftCloseIcon />}
         </Button>
       </div>
+      {library != null && !collapsed && (
+        <div
+          role="tablist"
+          data-slot="secondary-sidebar-tabs"
+          className="flex shrink-0 gap-1 border-b border-border/45 px-2.5 py-2"
+        >
+          {(
+            [
+              ['controls', title],
+              ['library', libraryLabel ?? title],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={view === value}
+              onClick={() => setView(value)}
+              className={cn(
+                'h-7 min-w-0 flex-1 truncate rounded-md px-2 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
+                view === value
+                  ? 'bg-accent/80 text-foreground'
+                  : 'text-muted-foreground hover:bg-accent/45 hover:text-foreground',
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+      {showLibrary && !collapsed && (
+        <div role="tabpanel" className="flex min-h-0 flex-1 flex-col">
+          {library}
+        </div>
+      )}
       <div
-        hidden={collapsed}
+        hidden={collapsed || showLibrary}
         data-slot="secondary-sidebar-content"
         className={cn(
           'studio-scrollbar min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain p-3.5 text-[13px] [scroll-padding-block:0.875rem] [scrollbar-gutter:stable] [&>*]:min-w-0 [&>section]:w-full [&>section]:shrink-0 [&_button]:max-w-full [&_h2]:tracking-[-0.012em] [&_h3]:tracking-[-0.01em] [&_input]:max-w-full [&_label]:leading-5 [&_p]:leading-[1.55] [&_summary]:rounded-lg [&_summary]:outline-none [&_summary]:transition-[color,background-color] [&_summary]:duration-150 [&_summary:hover]:text-foreground [&_summary:focus-visible]:ring-2 [&_summary:focus-visible]:ring-ring/35 [&_textarea]:max-w-full',
           VARIANT_STYLES[variant],
-          collapsed && 'hidden',
+          (collapsed || showLibrary) && 'hidden',
           className,
         )}
       >
         {children}
       </div>
-      {footer !== undefined && footer !== null && !collapsed && (
+      {footer !== undefined && footer !== null && !collapsed && !showLibrary && (
         <div
           data-slot="secondary-sidebar-footer"
           className="flex min-h-0 max-h-[70%] flex-col space-y-3 border-t border-border/55 bg-background/40 p-3.5 text-[13px] backdrop-blur-xl"

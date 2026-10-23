@@ -65,7 +65,11 @@ const profile = () => ({
   },
 });
 try {
-  await page.addInitScript(() => localStorage.setItem('voicestudio.setup.complete.v1', '1'));
+  await page.addInitScript(() => {
+    localStorage.setItem('voicestudio.setup.complete.v1', '1');
+    // These checks inspect the expanded navigation, so keep it open beside the library.
+    localStorage.setItem('voicestudio.workspace-layout', JSON.stringify({ autoCollapseSidebar: false }));
+  });
   await page.route('**/api/**', async (route) => {
     const request = route.request();
     const path = new URL(request.url()).pathname;
@@ -153,11 +157,11 @@ try {
   const checkedTier = () => slider.getAttribute('aria-valuetext');
   await slider.waitFor();
   await page.waitForFunction(
-    () => document.querySelector('footer [role=slider]') && !document.querySelector('footer [role=slider]').disabled,
+    () => document.querySelector('footer input[type=range]') && !document.querySelector('footer input[type=range]').disabled,
   );
   await slider.focus();
   await page.keyboard.press('ArrowRight');
-  await page.waitForFunction(() => document.querySelector('footer [role=slider]')?.disabled);
+  await page.waitForFunction(() => document.querySelector('footer input[type=range]')?.disabled);
   releaseSave();
   // Changing the tier opens the models popover so the switch is visible without a tall sidebar footer.
   const popup = page.locator('[data-slot=popover-content]');
@@ -190,7 +194,7 @@ try {
   fail = false;
   await footer.getByRole('button', { name: 'Auto', exact: true }).click();
   await footer.getByRole('button', { name: 'Auto', exact: true, pressed: true }).waitFor();
-  await page.waitForFunction(() => !document.querySelector('footer [role=slider]')?.disabled);
+  await page.waitForFunction(() => !document.querySelector('footer input[type=range]')?.disabled);
   // The popover opened with the tier change and polled live usage; start counting afresh once closed.
   await page.keyboard.press('Escape');
   await popup.waitFor({ state: 'hidden' });
@@ -213,8 +217,9 @@ try {
   assert.equal(await hardwareSpecs.isVisible(), false, 'Details collapse with the keyboard');
   await details.blur();
   await page.getByText('Memory limit', { exact: true }).first().waitFor();
-  await footer.getByText('OmniVoice', { exact: true }).waitFor();
-  await footer.getByText('Parakeet TDT v3', { exact: true }).waitFor();
+  // The engines now sit in the same popover as the hardware fit.
+  await popup.getByText('OmniVoice', { exact: true }).waitFor();
+  await popup.getByText('Parakeet TDT v3', { exact: true }).waitFor();
   assert.deepEqual(writes.at(-1), { tier: 'auto', family: null });
   await page
     .locator('[data-slot=popover-content]')
