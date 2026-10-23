@@ -97,7 +97,9 @@ export function usePerformanceProfile() {
       const target = state.targets.tts;
       if (
         // Backends before 0.5.7 don't report the list; they tier only OmniVoice.
-        (state.tts_tiered_engines ?? ['omnivoice', 'omnivoice-subprocess']).includes(state.selections.tts.engine) &&
+        (state.tts_tiered_engines ?? ['omnivoice', 'omnivoice-subprocess']).includes(
+          state.selections.tts.engine,
+        ) &&
         typeof target.steps === 'number' &&
         typeof target.postprocess === 'boolean'
       ) {
@@ -105,7 +107,7 @@ export function usePerformanceProfile() {
         // draft only keeps its visible override controls in sync; a chunk-load
         // failure must not turn an already-applied backend change into a failed
         // mutation.
-        await import('@/lib/store/clone-settings')
+        void import('@/lib/store/clone-settings')
           .then(({ patchCloneSettings }) =>
             patchCloneSettings({ steps: target.steps!, postprocess: target.postprocess! }),
           )
