@@ -19,6 +19,9 @@ import com.voicestudio.mobile.features.StudioViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import okhttp3.mockwebserver.*
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -91,6 +94,48 @@ class HostSwitchRegressionTest {
         compose.onNode(hasSetTextAction() and hasText("Edited on phone")).assertExists()
         compose.onNodeWithText("This phone").performClick()
         compose.onNode(hasSetTextAction() and hasText("Edited on phone")).assertExists()
+    }
+    @Test fun changingDictationLocationKeepsWordsUntilTheyAreCopiedOrReplaced() = runBlocking<Unit> {
+        val fallback=a.dispatcher
+        a.dispatcher=object:okhttp3.mockwebserver.Dispatcher() {
+            override fun dispatch(request:RecordedRequest):MockResponse = when {
+                request.path=="/dictation/readiness" -> MockResponse().setBody("""{"ready":true}""")
+                request.path=="/api/auth/ws-ticket" -> MockResponse().setBody("""{"ticket":"test"}""")
+                request.path.orEmpty().startsWith("/ws/transcribe") -> MockResponse().withWebSocketUpgrade(object:WebSocketListener() {
+                    override fun onOpen(webSocket:WebSocket,response:Response) {
+                        webSocket.send("""{"type":"final","text":"Words captured before switching","final_kind":"summary"}""")
+                    }
+                    override fun onClosing(webSocket:WebSocket,code:Int,reason:String) {webSocket.close(code,null)}
+                })
+                else -> fallback.dispatch(request)
+            }
+        }
+        shadowOf(ApplicationProvider.getApplicationContext<Application>()).grantPermissions(android.Manifest.permission.RECORD_AUDIO)
+        vm.connect(a.url("/").toString(),"","");awaitIdle()
+        compose.setContent {StudioApp(vm)}
+        compose.onNode(hasText("Dictate") and hasClickAction()).performClick()
+        compose.waitUntil(15000) {
+            shadowOf(Looper.getMainLooper()).idle()
+            compose.onAllNodesWithContentDescription("Record").fetchSemanticsNodes().singleOrNull()?.let {
+                !it.config.contains(androidx.compose.ui.semantics.SemanticsProperties.Disabled)
+            }==true
+        }
+        compose.onNodeWithContentDescription("Record").performClick()
+        compose.waitUntil(15000) {
+            shadowOf(Looper.getMainLooper()).idle()
+            compose.onAllNodesWithText("Words captured before switching").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("This phone").performClick()
+        compose.onNodeWithText("Words captured before switching").assertExists()
+        compose.onNodeWithContentDescription("Copy").assertIsEnabled().performClick()
+        assertEquals("Words captured before switching",ApplicationProvider.getApplicationContext<Application>()
+            .getSystemService(android.content.ClipboardManager::class.java).primaryClip!!.getItemAt(0).text.toString())
+        compose.onNodeWithText("Computer").performClick()
+        compose.onNodeWithText("Words captured before switching").assertExists()
+        compose.onNodeWithContentDescription("Copy").assertIsEnabled()
+        vm.connect(b.url("/").toString(),"","");awaitIdle()
+        compose.onNode(hasText("Dictate") and hasClickAction()).performClick()
+        compose.onNodeWithText("Words captured before switching").assertDoesNotExist()
     }
     @Test fun reconnectAndDisconnectClearCheckpointsAndStopOldMonitoring() = runBlocking {
         vm.connect(a.url("/").toString(),"","");awaitIdle()

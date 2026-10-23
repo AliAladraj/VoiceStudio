@@ -35,4 +35,31 @@ class PhoneDictationTest {
         controller.start(model);runCurrent();assertTrue(controller.active.value)
         controller.close();advanceUntilIdle();assertTrue(released);assertFalse(controller.active.value)
     }
+    @Test fun completedPhoneTranscriptSurvivesControllerRecreation() = runTest {
+        val transcript=MutableStateFlow("Earlier words")
+        val source=DictationAudioSource {_,send ->send(byteArrayOf(0,0,0,64),4)}
+        val first=PhoneDictation(Engine(),this,{throw it},source,transcript)
+        assertEquals("Earlier words",first.text.value)
+        first.start(model);advanceUntilIdle();first.close()
+        val next=PhoneDictation(Engine(),this,{throw it},source,transcript)
+        assertEquals("complete",next.text.value)
+        transcript.value="Words from the computer"
+        assertEquals("Words from the computer",next.text.value)
+    }
+    @Test fun closedSessionCannotReportLateDecoderFailureOnAnotherRoute() = runTest {
+        val errors=mutableListOf<Throwable>()
+        val entered=CompletableDeferred<Unit>()
+        val engine=object:Engine() {
+            override fun streamTranscribe(model:PhoneModel,audio:Flow<LocalAudio>)=flow<Transcript> {
+                entered.complete(Unit)
+                try {awaitCancellation()}
+                finally {withContext(NonCancellable) {throw IllegalStateException("Old decoder cleanup")}}
+            }
+        }
+        val controller=PhoneDictation(engine,this,{errors+=it},DictationAudioSource {_,_->})
+        controller.start(model);runCurrent();entered.await()
+        controller.close();advanceUntilIdle()
+        assertTrue(errors.toString(),errors.isEmpty())
+        assertFalse(controller.active.value)
+    }
 }

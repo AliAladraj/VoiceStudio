@@ -27,38 +27,40 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 internal class PhoneDictation(private val engine: LocalEngine, private val scope: CoroutineScope, private val failure: (Throwable)->Unit,
-    private val microphone: DictationAudioSource = MicrophoneSource()) : AutoCloseable {
-    private val mutableText=MutableStateFlow("")
+    private val microphone: DictationAudioSource = MicrophoneSource(), transcript: MutableStateFlow<String> = MutableStateFlow("")) : AutoCloseable {
+    private val mutableText=transcript
     val text=mutableText.asStateFlow()
     private val mutableActive=MutableStateFlow(false)
     val active=mutableActive.asStateFlow()
     @Volatile private var recording=false
     private var capture: Job?=null
+    @Volatile private var generation=0L
     fun start(model: PhoneModel) {
         if(mutableActive.value) return
+        val session=++generation
         mutableActive.value=true;mutableText.value="";recording=true
         capture=scope.launch {
             try {
                 val samples=channelFlow {
-                    microphone.record({recording}) {buffer,n ->
+                    microphone.record({session==generation&&recording}) {buffer,n ->
                         val pcm=ByteBuffer.wrap(buffer,0,n).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer()
                         val floats=FloatArray(n/2) {pcm.get().toFloat()/32768f}
                         if(!trySend(LocalAudio(floats,16000)).isSuccess) throw ClientFailure("mobile.local.capture_slow")
                     }
                 }.buffer(64,BufferOverflow.SUSPEND)
-                engine.streamTranscribe(model,samples).collect {mutableText.value=it.text}
-            } catch(e:CancellationException) {throw e} catch(e:Exception) {failure(e)}
-            finally {recording=false;mutableActive.value=false}
+                engine.streamTranscribe(model,samples).collect {if(session==generation) mutableText.value=it.text}
+            } catch(e:CancellationException) {throw e} catch(e:Exception) {if(session==generation) failure(e)}
+            finally {if(session==generation) {recording=false;mutableActive.value=false}}
         }
     }
     fun finish() {recording=false}
-    override fun close() {recording=false;capture?.cancel()}
+    override fun close() {generation++;recording=false;capture?.cancel();mutableActive.value=false}
 }
 
-@Composable internal fun PhoneDictateScreen(vm: StudioViewModel, model: PhoneModel?, ready: Boolean) {
+@Composable internal fun PhoneDictateScreen(vm: StudioViewModel, model: PhoneModel?, ready: Boolean, transcript: MutableStateFlow<String>) {
     val context=LocalContext.current
     val scope=rememberCoroutineScope()
-    val controller=remember(model?.id) {PhoneDictation(vm.phone.engine,scope,vm::fail)}
+    val controller=remember(model?.id,transcript) {PhoneDictation(vm.phone.engine,scope,vm::fail,transcript=transcript)}
     val text by controller.text.collectAsState()
     val active by controller.active.collectAsState()
     val lifecycle=LocalLifecycleOwner.current
