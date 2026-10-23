@@ -85,18 +85,14 @@ try {
       assert.ok(await speech.evaluate((el) => el === document.activeElement));
       assert.equal(await page.locator('[data-slot=tooltip-content][data-open]').count(), 0);
       await speech.blur();
-      // Speed / quality is a radiogroup of tiers (Fast/Balanced/Quality/Max) with an Auto toggle.
-      const tiers = footer.getByRole('radiogroup', {
+      // Speed / quality is a four-notch slider (Fast/Balanced/Quality/Max) with an Auto toggle.
+      const tier = footer.getByRole('slider', {
         name: strings.performanceProfile.title,
         exact: true,
       });
-      await tiers.waitFor();
-      assert.ok(await tiers.getAttribute('aria-describedby'));
-      assert.equal(
-        await tiers.locator('[role=radio][aria-checked=true]').count(),
-        1,
-        'Exactly one speed/quality tier is selected',
-      );
+      await tier.waitFor();
+      assert.ok(await tier.getAttribute('aria-describedby'));
+      assert.ok(await tier.getAttribute('aria-valuetext'), 'The selected tier is announced');
       for (const level of ['simple', 'models', 'details']) {
         await chooseView(level);
         assert.equal(

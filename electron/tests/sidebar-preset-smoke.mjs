@@ -148,24 +148,16 @@ try {
   });
   await page.goto(ui + '/#/clone');
   const footer = page.locator('aside').first().locator('footer');
-  // Speed / quality: a radiogroup of tiers (Fast/Balanced/Quality/Max) plus a separate Auto toggle.
-  const tiers = footer.getByRole('radiogroup', { name: 'Speed / quality', exact: true });
-  const tier = (name) => tiers.getByRole('radio', { name, exact: true });
-  const checkedTier = () => tiers.locator('[role=radio][aria-checked=true]').innerText();
-  await tiers.waitFor();
+  // Speed / quality: a four-notch slider (Fast/Balanced/Quality/Max) plus a separate Auto toggle.
+  const slider = footer.getByRole('slider', { name: 'Speed / quality', exact: true });
+  const checkedTier = () => slider.getAttribute('aria-valuetext');
+  await slider.waitFor();
   await page.waitForFunction(
-    () =>
-      document.querySelector('footer [role=radiogroup][aria-describedby$="-help"] [role=radio]') &&
-      !document.querySelector('footer [role=radiogroup][aria-describedby$="-help"] [role=radio]')
-        .disabled,
+    () => document.querySelector('footer [role=slider]') && !document.querySelector('footer [role=slider]').disabled,
   );
-  await tier('Fast').focus();
+  await slider.focus();
   await page.keyboard.press('ArrowRight');
-  await page.waitForFunction(
-    () =>
-      document.querySelector('footer [role=radiogroup][aria-describedby$="-help"] [role=radio]')
-        ?.disabled,
-  );
+  await page.waitForFunction(() => document.querySelector('footer [role=slider]')?.disabled);
   releaseSave();
   await footer.locator('[data-detail-level=models]').waitFor();
   const asr = footer.locator('[data-slot=engine-row]').filter({ hasText: 'Speech to text' });
@@ -181,7 +173,7 @@ try {
   assert.equal(await checkedTier(), 'Balanced');
   assert.deepEqual(writes, [{ tier: 'balanced', family: null }]);
   fail = true;
-  await tier('Balanced').focus();
+  await slider.focus();
   await page.keyboard.press('ArrowLeft');
   await footer.getByRole('alert').waitFor();
   assert.equal(
@@ -196,11 +188,7 @@ try {
   fail = false;
   await footer.getByRole('button', { name: 'Auto', exact: true }).click();
   await footer.getByRole('button', { name: 'Auto', exact: true, pressed: true }).waitFor();
-  await page.waitForFunction(
-    () =>
-      !document.querySelector('footer [role=radiogroup][aria-describedby$="-help"] [role=radio]')
-        ?.disabled,
-  );
+  await page.waitForFunction(() => !document.querySelector('footer [role=slider]')?.disabled);
   assert.equal(telemetryReads, 0, 'Closed hardware panel does not poll');
   await footer.getByRole('button', { name: 'Adapted to your hardware' }).click();
   const live = page.getByRole('region', { name: 'Live usage' });

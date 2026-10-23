@@ -26,6 +26,8 @@ metadata and the backend fallback mirror it.
 
 ### Fixed
 
+- Speed / quality in the sidebar is a simple slider again, and the simplest view leaves out the hardware row (#3031)
+- The Latest take panel is more compact: file details, render time and Check audio share one row (#3031)
 - The sidebar's Saved voices and Recent takes buttons both keep their labels instead of collapsing the inactive one to an icon (#3031)
 - On macOS full screen the sidebar logo moves into the freed corner, the compact rail drops its traffic-light gap (#3031)
 

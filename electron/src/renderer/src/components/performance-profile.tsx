@@ -11,7 +11,9 @@ import {
   ChevronRightIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useId, useRef, useState, type KeyboardEvent } from 'react';
+import { useId, useState } from 'react';
+import { Slider } from '@base-ui/react/slider';
+import { DirectionProvider } from '@base-ui/react/direction-provider';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { apiJson, describeError } from '@/lib/api/client';
@@ -35,10 +37,13 @@ import {
 export function PerformanceProfile({
   family = null,
   variant = 'compact',
+  showHardware = true,
   onApplied,
 }: {
   family?: PerformanceFamily | null;
   variant?: 'compact' | 'settings';
+  /** The hardware-fit row under the compact slider; the simplest sidebar view leaves it out. */
+  showHardware?: boolean;
   onApplied?: (state: PerformanceProfileState) => void;
 }) {
   const { t, i18n } = useTranslation();
@@ -58,7 +63,6 @@ export function PerformanceProfile({
   const groupId = useId();
   const [draft, setDraft] = useState<number | null>(null);
   const [hardwareOpen, setHardwareOpen] = useState(false);
-  const tierRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const busy =
     profile.isSaving ||
     !isBackendReachable(backend.stage) ||
@@ -240,31 +244,22 @@ export function PerformanceProfile({
       : plan?.status === 'unknown'
         ? CircleHelpIcon
         : CircleGaugeIcon;
-  const moveTier = (event: KeyboardEvent<HTMLDivElement>) => {
-    const current = Math.max(0, tiers.indexOf((shownTier ?? 'balanced') as (typeof tiers)[number]));
-    const forward = i18n.dir(i18n.language) === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
-    const back = forward === 'ArrowRight' ? 'ArrowLeft' : 'ArrowRight';
-    const next =
-      event.key === forward || event.key === 'ArrowDown'
-        ? current + 1
-        : event.key === back || event.key === 'ArrowUp'
-          ? current - 1
-          : event.key === 'Home'
-            ? 0
-            : event.key === 'End'
-              ? tiers.length - 1
-              : null;
-    if (next == null || disabled) return;
-    event.preventDefault();
-    const tier = tiers[Math.min(tiers.length - 1, Math.max(0, next))];
-    tierRefs.current[tiers.indexOf(tier)]?.focus();
-    void choose(tier);
-  };
+  const sliderPosition = Math.max(
+    0,
+    tiers.indexOf((shownTier ?? 'balanced') as (typeof tiers)[number]),
+  );
   return (
     <div className="min-w-0 space-y-1.5 py-1.5">
       <div className="flex items-center justify-between gap-2 px-1">
-        <span id={groupId} className="text-[11px] text-muted-foreground">
-          {t(supported ? 'performanceProfile.title' : 'modelSettings.unavailable')}
+        <span className="min-w-0 truncate text-[11px] text-muted-foreground">
+          <span id={groupId}>
+            {t(supported ? 'performanceProfile.title' : 'modelSettings.unavailable')}
+          </span>
+          {supported && shownTier && shownTier !== 'auto' && (
+            <span className="ms-1.5 font-medium text-foreground/80">
+              {t('performanceProfile.' + shownTier)}
+            </span>
+          )}
         </span>
         <button
           type="button"
@@ -282,47 +277,33 @@ export function PerformanceProfile({
           {t('performanceProfile.auto')}
         </button>
       </div>
-      <div
-        role="radiogroup"
-        aria-labelledby={groupId}
-        aria-describedby={groupId + '-help'}
-        aria-busy={profile.isSaving}
-        onKeyDown={moveTier}
-        className={cn(
-          'flex gap-0.5 rounded-lg bg-sidebar-accent/35 p-0.5 ring-1 ring-inset ring-sidebar-border/50',
-          disabled && 'opacity-50',
-        )}
-      >
-        {tiers.map((tier, index) => {
-          const picked = shownTier === tier;
-          const checked = !autoOn && picked;
-          return (
-            <button
-              key={tier}
-              ref={(node) => {
-                tierRefs.current[index] = node;
-              }}
-              type="button"
-              role="radio"
-              aria-checked={checked}
-              tabIndex={picked || (!shownTier && index === 1) ? 0 : -1}
-              disabled={disabled}
-              onClick={() => void choose(tier)}
-              className={cn(
-                'h-7 min-w-0 flex-auto truncate rounded-md px-1.5 text-[11px] font-medium outline-none transition-[background-color,color,box-shadow] duration-150 focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none',
-                checked
-                  ? 'bg-background text-foreground shadow-sm ring-1 ring-border/70'
-                  : picked
-                    ? 'text-foreground outline-1 -outline-offset-1 outline-primary/50 outline-dashed'
-                    : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {t('performanceProfile.' + tier)}
-            </button>
-          );
-        })}
-      </div>
-      {plan && !family && (
+      <DirectionProvider direction={i18n.dir(i18n.language)}>
+        <Slider.Root
+          min={0}
+          max={tiers.length - 1}
+          step={1}
+          largeStep={1}
+          value={sliderPosition}
+          disabled={disabled}
+          aria-busy={profile.isSaving}
+          onValueChange={(value) => setDraft(value)}
+          onValueCommitted={(value) => void choose(tiers[value])}
+          className={cn('w-full min-w-0 px-1', disabled && 'opacity-50', autoOn && 'opacity-60')}
+        >
+          <Slider.Control className="relative flex h-6 w-full min-w-0 touch-none items-center select-none">
+            <Slider.Track className="relative h-1.5 w-full min-w-0 rounded-full bg-sidebar-accent">
+              <Slider.Indicator className="rounded-full bg-primary/70" />
+              <Slider.Thumb
+                aria-labelledby={groupId}
+                aria-describedby={groupId + '-help'}
+                getAriaValueText={(_formatted, value) => t('performanceProfile.' + tiers[value])}
+                className="size-4 rounded-full border border-border bg-foreground shadow-sm ring-ring/40 outline-none focus-within:ring-4"
+              />
+            </Slider.Track>
+          </Slider.Control>
+        </Slider.Root>
+      </DirectionProvider>
+      {plan && !family && showHardware && (
         <Popover open={hardwareOpen} onOpenChange={setHardwareOpen}>
           <PopoverTrigger
             render={

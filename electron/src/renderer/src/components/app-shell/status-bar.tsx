@@ -625,6 +625,7 @@ export function StatusBar({
         )}
         {isBackendReachable(status.stage) && (
           <PerformanceProfile
+            showHardware={level !== 'simple'}
             onApplied={(applied) => {
               appliedRefreshStarted.current = presetRefreshing;
               setAppliedProfile(applied);
