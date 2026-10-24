@@ -110,6 +110,7 @@ metadata and the backend fallback mirror it.
 - Source-mode requests stop promptly when a backend response is interrupted. (#2799) — thanks @rudycelekli!
 - Cancelled queued tasks skip execution and retain cancelled status in the task stream and job history (#2800) — thanks @rudycelekli!
 - A cancelled child operation no longer stops the shared job worker or strands later queued work (#2801) — thanks @rudycelekli!
+- Malformed model licence records no longer crash the licence dialog or count an unknown action as acceptance (#2802) — thanks @rudycelekli!
 
 ### Fixed
 
