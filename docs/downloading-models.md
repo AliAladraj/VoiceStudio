@@ -166,3 +166,7 @@ takes effect at the next retry boundary.
 Deleting a model removes cached revisions of that model repository only. Other
 repositories (including forks sharing the same Git revision) and datasets with
 the same repository name remain cached.
+The segmented downloader verifies both Hugging Face checksum formats before
+replacing a destination: SHA-256 for LFS weights and Git blob SHA-1 for files
+stored directly in Git, such as configurations and tokenizers. A mismatch
+leaves the previous destination intact.

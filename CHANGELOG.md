@@ -132,6 +132,7 @@ metadata and the backend fallback mirror it.
 - Dub stem exports keep the background on the fitted vocal timeline for Smart Fit and Stretch Video tracks (#3091) — thanks @rudycelekli!
 - Explicit inline pronunciation overrides take priority over saved dictionaries (#3092) — thanks @rudycelekli!
 - Deleting a cached model preserves other repositories that share its revision or name (#3094) — thanks @rudycelekli!
+- Model downloads verify non-LFS Git blob checksums before replacing existing files (#3095) — thanks @rudycelekli!
 
 ### Fixed
 
