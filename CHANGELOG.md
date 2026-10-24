@@ -102,6 +102,7 @@ metadata and the backend fallback mirror it.
 - Changing pronunciation entry precedence refreshes cached longform audio (#2728) — thanks @rudycelekli!
 - Keep combining accents, Indic conjuncts, flags and joined emoji together when spelling longform text, matching the editor preview. (#2734) — thanks @rudycelekli!
 - Preserve supported long and multiline pronunciation overrides during text normalization, including numeric respellings, and keep long bracket metadata opaque. (#2735) — thanks @rudycelekli!
+- Leave audio containing NaN or infinity intact during silence trimming, preserving its original length and invalid samples for later generation postprocessing, and sanitize them before DSP in the OpenAI-compatible speech route, streaming sentences, queued batch dubbing and interactive segment previews. (#2738) — thanks @rudycelekli!
 
 ### Fixed
 
