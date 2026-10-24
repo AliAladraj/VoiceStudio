@@ -84,6 +84,7 @@ metadata and the backend fallback mirror it.
 - Failed saved-environment writes preserve existing settings and keys, and temporary writes retain their private file descriptor. (#2712) — thanks @rudycelekli!
 - Diagnostic and crash-report log tails use memory proportional to retained log lines instead of reading entire files. (#2713) — thanks @rudycelekli!
 - Preferences recover from non-object JSON so malformed saved settings do not break reading or saving choices. (#2714) — thanks @rudycelekli!
+- Runtime and access logs redact Hugging Face tokens, and Tailscale diagnostics retain safe status details without command output or exception text; keep unexpected programming failures visible while expected subprocess failures degrade safely. (#2715) — thanks @rudycelekli!
 
 ### Fixed
 
