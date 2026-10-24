@@ -131,6 +131,7 @@ metadata and the backend fallback mirror it.
 - Model loading verifies repaired weight files before native memory mapping (#3090) — thanks @rudycelekli!
 - Dub stem exports keep the background on the fitted vocal timeline for Smart Fit and Stretch Video tracks (#3091) — thanks @rudycelekli!
 - Explicit inline pronunciation overrides take priority over saved dictionaries (#3092) — thanks @rudycelekli!
+- Deleting a cached model preserves other repositories that share its revision or name (#3094) — thanks @rudycelekli!
 
 ### Fixed
 
