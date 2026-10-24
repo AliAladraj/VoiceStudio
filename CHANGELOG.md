@@ -130,6 +130,7 @@ metadata and the backend fallback mirror it.
 - Failed engine uninstalls report locked files and retain settings for a retry (#3089) — thanks @rudycelekli!
 - Model loading verifies repaired weight files before native memory mapping (#3090) — thanks @rudycelekli!
 - Dub stem exports keep the background on the fitted vocal timeline for Smart Fit and Stretch Video tracks (#3091) — thanks @rudycelekli!
+- Explicit inline pronunciation overrides take priority over saved dictionaries (#3092) — thanks @rudycelekli!
 
 ### Fixed
 
