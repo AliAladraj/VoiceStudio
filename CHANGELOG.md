@@ -109,6 +109,7 @@ metadata and the backend fallback mirror it.
 - Exports preserve destination links and reject links that require a directory. (#2798) — thanks @rudycelekli!
 - Source-mode requests stop promptly when a backend response is interrupted. (#2799) — thanks @rudycelekli!
 - Cancelled queued tasks skip execution and retain cancelled status in the task stream and job history (#2800) — thanks @rudycelekli!
+- A cancelled child operation no longer stops the shared job worker or strands later queued work (#2801) — thanks @rudycelekli!
 
 ### Fixed
 
