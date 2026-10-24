@@ -80,6 +80,7 @@ metadata and the backend fallback mirror it.
 - Imported artifact filenames reject Windows-invalid characters and device aliases consistently on every platform. (#2708) — thanks @rudycelekli!
 - Database backup discovery ignores directories named like snapshots so recovery and retention use real files. (#2709) — thanks @rudycelekli!
 - Diagnostic exports created in the same second retain separate archives instead of overwriting earlier reports. (#2710) — thanks @rudycelekli!
+- Saved environment changes replace duplicate and hand-written assignments so the chosen setting, including Unicode line separators in folder names, survives restart. (#2711) — thanks @rudycelekli!
 
 ### Fixed
 
