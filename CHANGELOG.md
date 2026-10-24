@@ -28,6 +28,7 @@ metadata and the backend fallback mirror it.
 
 ### Added
 
+- The phone apps have a Report action on every generated result: pick a reason, add an optional note, and it reaches the VoiceStudio team only when you tap Send (#3268)
 - The phone apps run speech, dictation, voice cloning and dubbing on the phone itself, offline once you download the models; pairing a computer is optional ([guide](docs/mobile.md)) (#2969)
 - Beta update channel: choose Stable or Beta under Settings → Updates; betas are `-beta.N` prereleases that never reach Stable users, and Docker gets matching `:beta` tags ([guide](docs/update-channels.md)) (#3175)
 
@@ -37,6 +38,7 @@ metadata and the backend fallback mirror it.
 
 ### Fixed
 
+- Saved voice and recent take rows show their hover actions on a solid background, so the buttons stay visible over long names (#3263)
 - Saved dub loads confirm before replacing unsaved work, recheck edits made during loading and stop when you leave the workspace (#3234)
 - Large VirusTotal uploads upgrade the documented legacy upload URL to HTTPS before sending files or credentials (#3238)
 
