@@ -137,6 +137,7 @@ metadata and the backend fallback mirror it.
 - Audio and stem downloads reject an unavailable requested language instead of returning another language under its name (#3097) — thanks @rudycelekli!
 - Dub retiming and subtitle burns accept odd-sized screen recordings by padding at most one row and column for H.264 (#3098) — thanks @rudycelekli!
 - Dub waveform peaks and onset markers stay visible for opposite-polarity stereo audio, including existing cached timelines (#3099) — thanks @rudycelekli!
+- Handle deeply nested speech markup faster in both narration and the editor. (#2736) — thanks @rudycelekli!
 
 ### Fixed
 
