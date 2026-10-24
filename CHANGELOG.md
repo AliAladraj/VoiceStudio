@@ -116,6 +116,7 @@ metadata and the backend fallback mirror it.
 - EPUB narration excludes nested and inline hidden XHTML content. (#2805) — thanks @rudycelekli!
 - Reject invalid tempo ratios before constructing FFmpeg audio filters. (#2806) — thanks @rudycelekli!
 - Skip RIFF format extensions without allocating their declared size. (#2807) — thanks @rudycelekli!
+- Exclude invalid sample windows from silence and relative-volume warnings. (#2808) — thanks @rudycelekli!
 
 ### Fixed
 
