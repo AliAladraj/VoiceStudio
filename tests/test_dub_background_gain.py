@@ -246,7 +246,7 @@ def test_a_superseded_preview_waits_for_every_lazy_reader(media_client, ending, 
     asyncio.run(run())
 
 
-def test_gain_pruning_preserves_other_languages_defaults_and_unowned_files(media_client):
+def test_gain_pruning_preserves_other_languages_defaults_and_unowned_files(media_client, symlink_or_skip):
     client, job, folder, _ = media_client
     job["dubbed_tracks"]["fr"] = dict(job["dubbed_tracks"]["es"], language_code="fr", language="French")
     es = "/dub/preview-video/gain_fixture?lang=es"
@@ -264,7 +264,7 @@ def test_gain_pruning_preserves_other_languages_defaults_and_unowned_files(media
     outside = folder / "outside.mp4"
     outside.write_bytes(b"must survive")
     symlink = exports / (family + "_gain_0.5.mp4")
-    symlink.symlink_to(outside)
+    symlink_or_skip(symlink, outside)
     default_paths = list(exports.glob("preview_v2_es_*.mp4"))
     keep = {p: p.read_bytes() for p in default_paths if "_gain_" not in p.name}
     french = next(exports.glob("preview_v2_fr_*_gain_2.mp4"))
