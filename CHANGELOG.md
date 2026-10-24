@@ -98,6 +98,7 @@ metadata and the backend fallback mirror it.
 - Cached voice references reject incomplete final PCM and float audio frames, including extensible WAV files. (#2726) — thanks @rudycelekli!
 - Corrupt desktop authorization metadata no longer blocks valid native path selections or raises an internal error. (#2727) — thanks @rudycelekli!
 - Oversized pause durations clamp to the documented ten-second limit without crashing narration parsing or diverging from the editor preview. (#2729) — thanks @rudycelekli!
+- Invalid memory-headroom environment settings fall back to the default advisory instead of breaking memory probes or suppressing low-memory warnings. (#2731) — thanks @rudycelekli!
 
 ### Fixed
 
