@@ -1605,8 +1605,6 @@
   {
     "name": "pause_overflow_milliseconds",
     "input": "a[pause 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999ms]b",
-    "name": "ssml_spell_grapheme_combining",
-    "input": "[spell]éA[/spell]",
     "default_voice": "v1",
     "expected": [
       {
@@ -1621,7 +1619,6 @@
           {
             "voice_id": "v1",
             "text": "b",
-            "text": "é A",
             "pause_ms_after": 0,
             "speed": null
           }
@@ -1632,8 +1629,6 @@
   {
     "name": "pause_overflow_scaled_seconds",
     "input": "a[pause 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000s]b",
-    "name": "ssml_spell_grapheme_indic",
-    "input": "[spell]क्‍षA[/spell]",
     "default_voice": "v1",
     "expected": [
       {
@@ -1648,7 +1643,42 @@
           {
             "voice_id": "v1",
             "text": "b",
-            "text": "क्‍ष A",
+            "pause_ms_after": 0,
+            "speed": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ssml_spell_grapheme_combining",
+    "input": "[spell]éA[/spell]",
+    "default_voice": "v1",
+    "expected": [
+      {
+        "title": "Chapter 1",
+        "spans": [
+          {
+            "voice_id": "v1",
+            "text": "é A",
+            "pause_ms_after": 0,
+            "speed": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ssml_spell_grapheme_indic",
+    "input": "[spell]क्\u200dषA[/spell]",
+    "default_voice": "v1",
+    "expected": [
+      {
+        "title": "Chapter 1",
+        "spans": [
+          {
+            "voice_id": "v1",
+            "text": "क्\u200dष A",
             "pause_ms_after": 0,
             "speed": null
           }
@@ -1676,7 +1706,7 @@
   },
   {
     "name": "ssml_spell_grapheme_emoji",
-    "input": "[spell]👩🏽‍💻A[/spell]",
+    "input": "[spell]👩🏽\u200d💻A[/spell]",
     "default_voice": "v1",
     "expected": [
       {
@@ -1684,7 +1714,7 @@
         "spans": [
           {
             "voice_id": "v1",
-            "text": "👩🏽‍💻 A",
+            "text": "👩🏽\u200d💻 A",
             "pause_ms_after": 0,
             "speed": null
           }

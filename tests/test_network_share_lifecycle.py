@@ -152,6 +152,8 @@ def test_share_listener_does_not_rerun_the_app_lifespan():
 
     from fastapi import FastAPI
 
+    from services import network_share as ns
+
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
         try:
             probe.bind(("0.0.0.0", 0))
