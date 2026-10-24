@@ -122,6 +122,7 @@ metadata and the backend fallback mirror it.
 - Audio.cpp runtime installation retries transient file locks and preserves the previous runtime if publication fails (#2685) — thanks @rudycelekli!
 - Failed integration and notification website links show a clear error instead of an unhandled rejection (#2844) — thanks @rudycelekli!
 - English text reads pound and euro prices as money: "£5.50" is spoken "five pounds, fifty pence" instead of "£five point five", and numbers touching another currency symbol keep their digits instead of becoming "€zwanzig" or "trois€" (#2990)
+- EPUB imports keep chapter headings and paragraph breaks when books use prefixed XHTML elements (#3078) — thanks @rudycelekli!
 
 ### Fixed
 
