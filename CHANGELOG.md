@@ -86,6 +86,7 @@ metadata and the backend fallback mirror it.
 - Preferences recover from non-object JSON so malformed saved settings do not break reading or saving choices. (#2714) — thanks @rudycelekli!
 - Runtime and access logs redact Hugging Face tokens, and Tailscale diagnostics retain safe status details without command output or exception text; keep unexpected programming failures visible while expected subprocess failures degrade safely. (#2715) — thanks @rudycelekli!
 - The pre-migration backup size limit includes committed database pages still in the WAL without counting repeated journal frames. (#2716) — thanks @rudycelekli!
+- Failed subprocess termination remains tracked so dubbing cancellation can retry without forgetting active work. (#2717) — thanks @rudycelekli!
 
 ### Fixed
 
