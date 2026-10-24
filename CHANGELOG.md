@@ -136,6 +136,7 @@ metadata and the backend fallback mirror it.
 - Loaded-models inventory reports CPU-only sidecar engines as CPU on accelerated hosts (#3096) — thanks @rudycelekli!
 - Audio and stem downloads reject an unavailable requested language instead of returning another language under its name (#3097) — thanks @rudycelekli!
 - Dub retiming and subtitle burns accept odd-sized screen recordings by padding at most one row and column for H.264 (#3098) — thanks @rudycelekli!
+- Dub waveform peaks and onset markers stay visible for opposite-polarity stereo audio, including existing cached timelines (#3099) — thanks @rudycelekli!
 
 ### Fixed
 
