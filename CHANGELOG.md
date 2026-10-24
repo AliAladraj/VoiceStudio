@@ -111,6 +111,7 @@ metadata and the backend fallback mirror it.
 - Cancelled queued tasks skip execution and retain cancelled status in the task stream and job history (#2800) — thanks @rudycelekli!
 - A cancelled child operation no longer stops the shared job worker or strands later queued work (#2801) — thanks @rudycelekli!
 - Malformed model licence records no longer crash the licence dialog or count an unknown action as acceptance (#2802) — thanks @rudycelekli!
+- Blank, malformed or negative CPU-pool and legacy idle-timeout overrides fall back to defaults instead of preventing backend startup (#2803) — thanks @rudycelekli!
 
 ### Fixed
 
