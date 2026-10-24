@@ -90,6 +90,7 @@ metadata and the backend fallback mirror it.
 - Automatic model endpoint selection ignores malformed cached origins and timestamps while preserving explicit endpoint settings. (#2718) — thanks @rudycelekli!
 - macOS quarantine detection checks the exact attribute instead of mistaking unrelated attribute values for Gatekeeper quarantine. (#2719) — thanks @rudycelekli!
 - Short streaming speech replies emit at unambiguous sentence endings, including numeric replies and supported non-Latin punctuation, while keeping Arabic semicolon clauses buffered. (#2720) — thanks @rudycelekli!
+- Overlong range download responses cannot overwrite completed neighboring segments and corrupt resumed model files. (#2721) — thanks @rudycelekli!
 
 ### Fixed
 
