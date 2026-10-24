@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import io
 import os
+import tempfile
 import re
 import tempfile
 from typing import Optional
@@ -208,10 +209,8 @@ def _drop_invalid_path_keys() -> None:
             # Existing-but-read-only (an external mount, a permissions accident)
             # passes isdir yet fails on first real use — probe actual write
             # capability, not just existence (review finding).
-            probe = os.path.join(val, f".omnivoice-write-probe-{os.getpid()}")
-            with open(probe, "w") as f:
-                f.write("ok")
-            os.remove(probe)
+            with tempfile.TemporaryFile(mode="w", dir=val) as probe:
+                probe.write("ok")
             usable = True
         except OSError:
             usable = False

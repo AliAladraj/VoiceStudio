@@ -91,6 +91,7 @@ metadata and the backend fallback mirror it.
 - macOS quarantine detection checks the exact attribute instead of mistaking unrelated attribute values for Gatekeeper quarantine. (#2719) — thanks @rudycelekli!
 - Short streaming speech replies emit at unambiguous sentence endings, including numeric replies and supported non-Latin punctuation, while keeping Arabic semicolon clauses buffered. (#2720) — thanks @rudycelekli!
 - Overlong range download responses cannot overwrite completed neighboring segments and corrupt resumed model files. (#2721) — thanks @rudycelekli!
+- Directory writability checks use isolated temporary files instead of overwriting existing probe names. (#2722) — thanks @rudycelekli!
 
 ### Fixed
 
