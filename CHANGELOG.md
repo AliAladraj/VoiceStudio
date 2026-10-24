@@ -133,6 +133,7 @@ metadata and the backend fallback mirror it.
 - Explicit inline pronunciation overrides take priority over saved dictionaries (#3092) — thanks @rudycelekli!
 - Deleting a cached model preserves other repositories that share its revision or name (#3094) — thanks @rudycelekli!
 - Model downloads verify non-LFS Git blob checksums before replacing existing files (#3095) — thanks @rudycelekli!
+- Loaded-models inventory reports CPU-only sidecar engines as CPU on accelerated hosts (#3096) — thanks @rudycelekli!
 
 ### Fixed
 
