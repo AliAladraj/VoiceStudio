@@ -1456,8 +1456,15 @@ async def dub_preview_video(
                     # Best-effort scratch cleanup — never fail the export.
                     logger.debug("retime intermediate cleanup failed: %s", e)
 
+        # Re-check containment right at the sink: the guard above sits outside this
+        # closure and CodeQL does not carry it across the try/finally. Both paths
+        # are already resolved, so this only restates the invariant.
+        mux_real = os.path.realpath(mux_path)
+        preview_real = os.path.realpath(preview_path)
+        if not (mux_real.startswith(_base + os.sep) and preview_real.startswith(_base + os.sep)):
+            raise HTTPException(status_code=400, detail="Invalid path")
         try:
-            os.replace(mux_path, preview_path)
+            os.replace(mux_real, preview_real)
         finally:
             _discard_tmp()
 
