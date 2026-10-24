@@ -95,6 +95,7 @@ metadata and the backend fallback mirror it.
 - Plain-text self-check reports escape non-ASCII diagnostic details so legacy Windows consoles can print them without crashing. (#2723) — thanks @rudycelekli!
 - Gallery status recovers malformed cached check times and counts only usable preview files while retaining download consent. (#2724) — thanks @rudycelekli!
 - Switching away from a model mirror preserves user changes to implicit-token settings made after the mirror policy applied. (#2725) — thanks @rudycelekli!
+- Cached voice references reject incomplete final PCM and float audio frames, including extensible WAV files. (#2726) — thanks @rudycelekli!
 
 ### Fixed
 
