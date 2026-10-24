@@ -88,6 +88,7 @@ metadata and the backend fallback mirror it.
 - The pre-migration backup size limit includes committed database pages still in the WAL without counting repeated journal frames. (#2716) — thanks @rudycelekli!
 - Failed subprocess termination remains tracked so dubbing cancellation can retry without forgetting active work. (#2717) — thanks @rudycelekli!
 - Automatic model endpoint selection ignores malformed cached origins and timestamps while preserving explicit endpoint settings. (#2718) — thanks @rudycelekli!
+- macOS quarantine detection checks the exact attribute instead of mistaking unrelated attribute values for Gatekeeper quarantine. (#2719) — thanks @rudycelekli!
 
 ### Fixed
 
