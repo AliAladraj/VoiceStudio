@@ -81,6 +81,7 @@ metadata and the backend fallback mirror it.
 - Database backup discovery ignores directories named like snapshots so recovery and retention use real files. (#2709) — thanks @rudycelekli!
 - Diagnostic exports created in the same second retain separate archives instead of overwriting earlier reports. (#2710) — thanks @rudycelekli!
 - Saved environment changes replace duplicate and hand-written assignments so the chosen setting, including Unicode line separators in folder names, survives restart. (#2711) — thanks @rudycelekli!
+- Failed saved-environment writes preserve existing settings and keys, and temporary writes retain their private file descriptor. (#2712) — thanks @rudycelekli!
 
 ### Fixed
 
