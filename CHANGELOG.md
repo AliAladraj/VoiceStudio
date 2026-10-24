@@ -104,6 +104,7 @@ metadata and the backend fallback mirror it.
 - Preserve supported long and multiline pronunciation overrides during text normalization, including numeric respellings, and keep long bracket metadata opaque. (#2735) — thanks @rudycelekli!
 - Leave audio containing NaN or infinity intact during silence trimming, preserving its original length and invalid samples for later generation postprocessing, and sanitize them before DSP in the OpenAI-compatible speech route, streaming sentences, queued batch dubbing and interactive segment previews. (#2738) — thanks @rudycelekli!
 - Retrying a setup package download clears its stale progress and time estimate. (#2795) — thanks @rudycelekli!
+- Dictation releases its recorder after a failed native delivery or finish. (#2796) — thanks @rudycelekli!
 
 ### Fixed
 
