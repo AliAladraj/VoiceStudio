@@ -139,6 +139,7 @@ metadata and the backend fallback mirror it.
 - Dub waveform peaks and onset markers stay visible for opposite-polarity stereo audio, including existing cached timelines (#3099) — thanks @rudycelekli!
 - Handle deeply nested speech markup faster in both narration and the editor. (#2736) — thanks @rudycelekli!
 - Pronunciation dictionaries honor later entries and language or project overrides even with case variants (#3093) — thanks @rudycelekli!
+- MP3 downloads remove temporary uncompressed background mixes and partial encodes after success, failure, or cancellation (#3100) — thanks @rudycelekli!
 
 ### Fixed
 
