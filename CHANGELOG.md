@@ -115,6 +115,7 @@ metadata and the backend fallback mirror it.
 - Model installs sharing a dependency no longer overwrite each other’s temporary revision markers or leave staging files after publication fails (#2804) — thanks @rudycelekli!
 - EPUB narration excludes nested and inline hidden XHTML content. (#2805) — thanks @rudycelekli!
 - Reject invalid tempo ratios before constructing FFmpeg audio filters. (#2806) — thanks @rudycelekli!
+- Skip RIFF format extensions without allocating their declared size. (#2807) — thanks @rudycelekli!
 
 ### Fixed
 
