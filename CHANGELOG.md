@@ -125,6 +125,7 @@ metadata and the backend fallback mirror it.
 - EPUB imports keep chapter headings and paragraph breaks when books use prefixed XHTML elements (#3078) — thanks @rudycelekli!
 - System Check and engine routing use CPU when the installed PyTorch build lacks kernels for the GPU, instead of reporting CUDA ready (#3067) — thanks @rudycelekli!
 - Dictation no longer adds an extra full stop after Arabic, Urdu or Indic sentence-ending punctuation (#3086) — thanks @rudycelekli!
+- Desktop text uploads correctly decode UTF-32 files in either byte order (#3087) — thanks @rudycelekli!
 
 ### Fixed
 
