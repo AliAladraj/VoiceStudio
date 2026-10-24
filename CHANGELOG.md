@@ -106,6 +106,7 @@ metadata and the backend fallback mirror it.
 - Retrying a setup package download clears its stale progress and time estimate. (#2795) — thanks @rudycelekli!
 - Dictation releases its recorder after a failed native delivery or finish. (#2796) — thanks @rudycelekli!
 - Desktop backend connection checks cancel oversized responses while reading them. (#2797) — thanks @rudycelekli!
+- Exports preserve destination links and reject links that require a directory. (#2798) — thanks @rudycelekli!
 
 ### Fixed
 
