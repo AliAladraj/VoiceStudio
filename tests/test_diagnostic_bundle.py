@@ -132,3 +132,20 @@ def test_same_second_bundles_keep_independent_reports(bundle_env, monkeypatch):
         assert json.loads(bundle.read("self_check.json"))["request"] == "first"
     with zipfile.ZipFile(second) as bundle:
         assert json.loads(bundle.read("self_check.json"))["request"] == "second"
+def test_diagnostic_tail_memory_depends_on_tail_size(tmp_path, monkeypatch):
+    import tracemalloc
+
+    path = tmp_path / "large.log"
+    line = "diagnostic line " + "x" * 112 + "\n"
+    with path.open("w") as handle:
+        for _ in range(48_000):
+            handle.write(line)
+    monkeypatch.setattr(diagnostic_bundle, "scrub_text", lambda text: text)
+    tracemalloc.start()
+    try:
+        result = diagnostic_bundle._scrubbed_tail(str(path), 5)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert result == line * 5
+    assert peak < 1_000_000, f"tail collection allocated {peak} bytes"
