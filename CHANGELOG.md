@@ -101,6 +101,7 @@ metadata and the backend fallback mirror it.
 - Invalid memory-headroom environment settings fall back to the default advisory instead of breaking memory probes or suppressing low-memory warnings. (#2731) — thanks @rudycelekli!
 - Changing pronunciation entry precedence refreshes cached longform audio (#2728) — thanks @rudycelekli!
 - Keep combining accents, Indic conjuncts, flags and joined emoji together when spelling longform text, matching the editor preview. (#2734) — thanks @rudycelekli!
+- Preserve supported long and multiline pronunciation overrides during text normalization, including numeric respellings, and keep long bracket metadata opaque. (#2735) — thanks @rudycelekli!
 
 ### Fixed
 
