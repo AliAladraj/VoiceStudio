@@ -75,6 +75,7 @@ metadata and the backend fallback mirror it.
 - Dub quality checks treat equivalent Unicode spellings as the same text (#2693) — thanks @rudycelekli!
 - Downloads replace ASCII control characters in filenames so malformed names cannot break HTTP responses. (#2703) — thanks @rudycelekli!
 - Public API URLs are validated without logging rejected credentials, and international hostnames work with the served web interface. (#2704) — thanks @rudycelekli!
+- Corrupt compressed voice bundles and EPUB imports report invalid archives instead of an internal error. (#2706) — thanks @rudycelekli!
 
 ### Fixed
 
