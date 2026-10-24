@@ -134,6 +134,7 @@ metadata and the backend fallback mirror it.
 - Deleting a cached model preserves other repositories that share its revision or name (#3094) — thanks @rudycelekli!
 - Model downloads verify non-LFS Git blob checksums before replacing existing files (#3095) — thanks @rudycelekli!
 - Loaded-models inventory reports CPU-only sidecar engines as CPU on accelerated hosts (#3096) — thanks @rudycelekli!
+- Audio and stem downloads reject an unavailable requested language instead of returning another language under its name (#3097) — thanks @rudycelekli!
 
 ### Fixed
 
