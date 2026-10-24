@@ -83,6 +83,7 @@ metadata and the backend fallback mirror it.
 - Saved environment changes replace duplicate and hand-written assignments so the chosen setting, including Unicode line separators in folder names, survives restart. (#2711) — thanks @rudycelekli!
 - Failed saved-environment writes preserve existing settings and keys, and temporary writes retain their private file descriptor. (#2712) — thanks @rudycelekli!
 - Diagnostic and crash-report log tails use memory proportional to retained log lines instead of reading entire files. (#2713) — thanks @rudycelekli!
+- Preferences recover from non-object JSON so malformed saved settings do not break reading or saving choices. (#2714) — thanks @rudycelekli!
 
 ### Fixed
 
