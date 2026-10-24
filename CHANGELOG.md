@@ -119,6 +119,7 @@ metadata and the backend fallback mirror it.
 - Exclude invalid sample windows from silence and relative-volume warnings. (#2808) — thanks @rudycelekli!
 - Use even word spacing when ASR or fitted word timings are non-finite. (#2809) — thanks @rudycelekli!
 - Audio.cpp runtime installation retries transient file locks and preserves the previous runtime if publication fails (#2685) — thanks @rudycelekli!
+- Failed integration and notification website links show a clear error instead of an unhandled rejection (#2844) — thanks @rudycelekli!
 
 ### Fixed
 
