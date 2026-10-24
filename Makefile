@@ -1,6 +1,6 @@
 # Maintainer shortcuts; product development uses bun/uv directly.
 
-.PHONY: release release-dry release-publish virustotal
+.PHONY: release release-dry release-publish virustotal install-hooks uninstall-hooks
 
 PYTHON ?= python3
 
@@ -17,3 +17,9 @@ release-publish: ## Publish an existing draft: make release-publish TAG=v0.5.8
 virustotal: export VIRUSTOTAL_FILE = $(FILE)
 virustotal: ## Upload committed HEAD source ZIP, or make virustotal FILE=/path/to/public/file
 	$(PYTHON) scripts/virustotal.py
+
+install-hooks: ## Run the cached local CI (dagger call check) before every git push
+	git config core.hooksPath scripts/git-hooks
+
+uninstall-hooks: ## Stop running local CI before git push
+	git config --unset core.hooksPath

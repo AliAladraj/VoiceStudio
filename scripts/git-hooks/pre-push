@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Opt-in: run the cached local CI (`dagger call check`) before a push leaves
+# the machine. Install with `make install-hooks`, remove with `make uninstall-hooks`.
+# Skip once: SKIP_LOCAL_CI=1 git push   (or git push --no-verify)
+set -u
+
+[ "${SKIP_LOCAL_CI:-}" = "1" ] && exit 0
+
+# Pushing only deletions (all-zero local sha) has nothing to check.
+zero=0000000000000000000000000000000000000000
+checked=0
+while read -r _ local_sha _ _; do
+  [ "$local_sha" != "$zero" ] && checked=1
+done
+[ "$checked" = 0 ] && exit 0
+
+for tool in dagger docker; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    echo "pre-push: $tool not found, skipping local CI (see .github/CONTRIBUTING.md > Cached local checks)" >&2
+    exit 0
+  fi
+done
+
+echo "pre-push: dagger call check (cached; first run takes minutes, reruns seconds)" >&2
+if ! dagger call check; then
+  echo "pre-push: local CI failed. Fix it, or push anyway with SKIP_LOCAL_CI=1 / --no-verify." >&2
+  exit 1
+fi

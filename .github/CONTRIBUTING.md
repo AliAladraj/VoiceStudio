@@ -339,6 +339,11 @@ The first run downloads container images and dependencies (as CI does); after
 that your code and results stay on your machine. CI is unchanged: `ci.yml`
 stays the gate.
 
+To run it automatically before every `git push` (opt-in, applies to this
+clone and its worktrees): `make install-hooks`; undo with `make uninstall-hooks`.
+Skip once with `SKIP_LOCAL_CI=1 git push` or `--no-verify`. The hook does
+nothing if `dagger` or `docker` is missing.
+
 ```bash
 dagger call check             # all of the above, in parallel
 dagger call check --git=.git  # also run tests that read real git history
