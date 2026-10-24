@@ -100,6 +100,7 @@ metadata and the backend fallback mirror it.
 - Oversized pause durations clamp to the documented ten-second limit without crashing narration parsing or diverging from the editor preview. (#2729) — thanks @rudycelekli!
 - Invalid memory-headroom environment settings fall back to the default advisory instead of breaking memory probes or suppressing low-memory warnings. (#2731) — thanks @rudycelekli!
 - Changing pronunciation entry precedence refreshes cached longform audio (#2728) — thanks @rudycelekli!
+- Keep combining accents, Indic conjuncts, flags and joined emoji together when spelling longform text, matching the editor preview. (#2734) — thanks @rudycelekli!
 
 ### Fixed
 
