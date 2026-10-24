@@ -78,6 +78,7 @@ metadata and the backend fallback mirror it.
 - Corrupt compressed voice bundles and EPUB imports report invalid archives instead of an internal error. (#2706) — thanks @rudycelekli!
 - Subtitle imports retain cues whose hour field has more than two digits, including exported long recordings. (#2707) — thanks @rudycelekli!
 - Imported artifact filenames reject Windows-invalid characters and device aliases consistently on every platform. (#2708) — thanks @rudycelekli!
+- Database backup discovery ignores directories named like snapshots so recovery and retention use real files. (#2709) — thanks @rudycelekli!
 
 ### Fixed
 
