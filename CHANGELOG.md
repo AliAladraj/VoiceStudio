@@ -138,6 +138,7 @@ metadata and the backend fallback mirror it.
 - Dub retiming and subtitle burns accept odd-sized screen recordings by padding at most one row and column for H.264 (#3098) — thanks @rudycelekli!
 - Dub waveform peaks and onset markers stay visible for opposite-polarity stereo audio, including existing cached timelines (#3099) — thanks @rudycelekli!
 - Handle deeply nested speech markup faster in both narration and the editor. (#2736) — thanks @rudycelekli!
+- Pronunciation dictionaries honor later entries and language or project overrides even with case variants (#3093) — thanks @rudycelekli!
 
 ### Fixed
 
