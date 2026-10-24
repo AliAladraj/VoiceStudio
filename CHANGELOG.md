@@ -113,6 +113,7 @@ metadata and the backend fallback mirror it.
 - Malformed model licence records no longer crash the licence dialog or count an unknown action as acceptance (#2802) — thanks @rudycelekli!
 - Blank, malformed or negative CPU-pool and legacy idle-timeout overrides fall back to defaults instead of preventing backend startup (#2803) — thanks @rudycelekli!
 - Model installs sharing a dependency no longer overwrite each other’s temporary revision markers or leave staging files after publication fails (#2804) — thanks @rudycelekli!
+- EPUB narration excludes nested and inline hidden XHTML content. (#2805) — thanks @rudycelekli!
 
 ### Fixed
 
