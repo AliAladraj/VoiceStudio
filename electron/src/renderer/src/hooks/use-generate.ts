@@ -159,6 +159,11 @@ function announceResultNotices(result: GenerateResult): void {
   }
 }
 
+/** Drive a single synthesis lifecycle and forward per-take engine capabilities.
+ *
+ * Cloning may include IndexTTS2 text or vector emotion; unsupporting engines
+ * and the independent Voice Design workspace never inherit those controls.
+ */
 function useGenerateController(): UseGenerateClone {
   const queryClient = useQueryClient();
   const inputBlocker = useCloneInputsReadiness();
@@ -271,6 +276,7 @@ function useGenerateController(): UseGenerateClone {
     [],
   );
 
+  /** Synthesize a clone or designed take; only supported clone engines get emotion. */
   const generate = useCallback(
     async (design?: DesignGenerateInput) => {
       const settings = cloneSettingsStore.state;
@@ -294,7 +300,8 @@ function useGenerateController(): UseGenerateClone {
             ) || !design.text.trim()
           : blocker ||
             !settings.text.trim() ||
-            (!settings.selectedProfileId && !reference.file?.size)
+            // A preset-only engine speaks its preset voice: no clip or profile.
+            (!presetOnly && !settings.selectedProfileId && !reference.file?.size)
       ) {
         if (blocker === 'reference') setWorkspace({ panel: 'voice' });
         return;
@@ -326,7 +333,12 @@ function useGenerateController(): UseGenerateClone {
       const controller = new AbortController();
       abortRef.current = controller;
       try {
-        const free = design?.instruct ?? settings.instruct;
+        // A preset-only engine that can't design never reads a style
+        // instruct, and /generate refuses one there as a design request: the
+        // preset voice take keeps working with a leftover instruct (#3413).
+        const free =
+          design?.instruct ??
+          (presetOnly && activeTts?.supports_voice_design === false ? '' : settings.instruct);
         // Only OmniVoice's closed tag set needs reducing; other engines read
         // the description natively and would lose whatever the sanitizer drops.
         const instruct = !free.trim()
@@ -350,6 +362,16 @@ function useGenerateController(): UseGenerateClone {
           instruct,
           instructVocabulary,
           designRecipe: design?.recipe,
+          // IndexTTS2's emotion controls affect the performance, not the
+          // reference voice. Never leak stale emotion options to other engines
+          // or to the separate Voice Design workspace.
+          ...(!design && activeTts?.supports_emotion
+            ? settings.emotionMode === 'vector'
+              ? { emoVector: [...settings.emotionVector] }
+              : settings.emotionMode === 'text' && settings.emotionText.trim()
+                ? { emoText: settings.emotionText.trim(), emoAlpha: settings.emotionAlpha }
+                : {}
+            : {}),
           steps: effectiveSamplingSteps(
             settings.steps,
             queryClient.getQueryData<EnginesResponse>(queryKeys.engines)?.tts?.active,
