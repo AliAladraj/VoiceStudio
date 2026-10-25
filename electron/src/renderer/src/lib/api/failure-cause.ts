@@ -1,11 +1,12 @@
 /** Plain-language cause of a failed generation, inferred from the raw error text. */
 export type FailureCause = 'vram' | 'model_missing' | 'busy' | 'timeout' | 'bad_response';
 
-const HTML_BODY = /^\s*(?:<!doctype\s+html|<html[\s>]|<head[\s>]|<body[\s>])|<\/(?:html|body|title)>/i;
+const HTML_START = /^\s*(?:<!doctype\s+html|<html[\s>]|<head[\s>]|<body[\s>])/i;
+const HTML_CLOSE = /<\/(?:html|body|title)>/i;
 
 /** A proxy error page (nginx 504, Cloudflare 524, ...) leaked in place of a message. */
 export function looksLikeHtml(text: string): boolean {
-  return HTML_BODY.test(text);
+  return HTML_START.test(text) || HTML_CLOSE.test(text);
 }
 
 const PATTERNS: Array<[FailureCause, RegExp]> = [
