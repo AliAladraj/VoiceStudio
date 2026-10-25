@@ -96,6 +96,7 @@
     "brand_by": "{{brand}} av",
     "all": "Alla",
     "allContributors": "Alla bidragsgivare",
+    "coreMaintainer": "Huvudansvarig",
     "title": "VoiceStudio.sh Öppen källkod",
     "design": "Skapa en röst utifrån en beskrivning.",
     "dub": "Översätt och dubba ljud eller video.",
@@ -1873,7 +1874,9 @@
     "deepl_base_url_help": "Anpassad DeepL API-slutpunkt (standard: https://api.deepl.com/v2). Ändra för proxy/självvärd.",
     "microsoft_base_url_help": "Anpassad Azure Translator-slutpunkt (standard: https://api.cognitive.microsofttranslator.com).",
     "region": "Region",
-    "aws_profile": "AWS-profil"
+    "aws_profile": "AWS-profil",
+    "deepl_key_placeholder": "DeepL API-nyckel",
+    "microsoft_key_placeholder": "Microsoft API-nyckel"
   },
   "about": {
     "architecture": "Arkitektur",
@@ -2054,6 +2057,7 @@
     "setup_access": "Tillåt skrivåtkomst till appens datamapp och försök igen.",
     "setup_unsupported_platform": "Den här Intel-Macen kan inte köra den lokala AI-backendservern — PyTorch saknar macOS Intel-hjul. Anslut en fjärrbackend nedan istället; ingen lokal installation behövs.",
     "setup_wrong_architecture": "Det här är Intel-versionen (x64) av VoiceStudio som körs via Rosetta på en Mac med Apple Silicon, så den lokala AI-backenden kan inte installeras. Avsluta appen, installera Apple Silicon-DMG:n (arm64) ovanpå och öppna den igen – dina röster och projekt finns kvar.",
+    "setup_missing_system_library": "Det här Windows-systemet saknar Microsoft Visual C++ 2015-2022 Redistributable (x64), som PyTorch ljudextensionen behöver. Installera det från Microsoft och tryck sedan på Försök igen.",
     "download_apple_silicon": "Ladda ned Apple Silicon-versionen",
     "retry": "Försök igen",
     "ready": "Motorn är redo",
@@ -2075,8 +2079,25 @@
     "port_in_use_short": "Port {{port}} används",
     "proxy_bypass_help": "Avsluta VoiceStudio helt, ange proxyadressen i HTTP_PROXY/HTTPS_PROXY och undantagna värdar i NO_PROXY i en terminal och starta sedan VoiceStudio därifrån. Ett nytt försök i den öppna appen läser inte in nya miljövariabler.",
     "hint_spawn_blocked": "Operativsystemet eller säkerhetsprogramvaran vägrade starta den lokala motorn. Lägg till VoiceStudios körtidsmapp bland undantagen i ditt antivirusprogram (Windows: Windows-säkerhet → Virus- och hotskydd → Hantera inställningar → Undantag), kontrollera att den inte ligger i en molnsynkad mapp som OneDrive och försök igen.",
+    "hint_smart_app_control": "Windows Smart appkontroll blockerade den lokala motorn. Den saknar undantag per app, så ett undantag i antivirusprogrammet hjälper inte. Stäng av den i Windows-säkerhet → App- och webbläsarkontroll → Inställningar för Smart appkontroll (Windows kan inte slå på den igen utan en återställning), eller anslut VoiceStudio till en motor på en annan dator och försök igen.",
     "hint_slow_start": "Motorn höll fortfarande på att starta när väntetiden tog slut. Långsamma datorer, särskilt utan dedikerat grafikkort, och den första starten efter en installation (antivirusprogrammet skannar varje ny fil) kan ta flera minuter. Stäng minneskrävande appar och försök igen; senare starter går mycket snabbare.",
-    "hint_synced_folder": "Den här platsen ligger i en molnsynkad mapp (OneDrive, Dropbox, iCloud Drive, Google Drive). Platshållare som bara finns online och fillåsning förstör Python-miljön. Flytta VoiceStudio till en vanlig lokal mapp (till exempel C:\\VoiceStudio i Windows eller ~/VoiceStudio i macOS och Linux) och konfigurera den på nytt."
+    "hint_synced_folder": "Den här platsen ligger i en molnsynkad mapp (OneDrive, Dropbox, iCloud Drive, Google Drive). Platshållare som bara finns online och fillåsning förstör Python-miljön. Flytta VoiceStudio till en vanlig lokal mapp (till exempel C:\\VoiceStudio i Windows eller ~/VoiceStudio i macOS och Linux) och konfigurera den på nytt.",
+    "cause_smart_app_control": "Windows Smart App Control blockerade motorn",
+    "cause_spawn_blocked": "Säkerhetsprogram blockerade att motorn startade",
+    "cause_native_crash": "Motorn kraschade vid start (inbyggt fel)",
+    "cause_missing_env": "Python-miljön saknas eller är ofullständig",
+    "cause_permission": "Ingen behörighet att skriva till motormappen",
+    "cause_synced_folder": "Motormappen ligger i en molnsynkad mapp",
+    "cause_slow_start": "Motorn startar fortfarande på en långsam dator",
+    "choose_folder": "Välj en annan mapp",
+    "copy_diagnostics": "Kopiera diagnostik",
+    "diagnostics_copied": "Diagnostik kopierad",
+    "details": "Detaljer",
+    "pill_starting": "Startar",
+    "pill_recovering": "Återhämtar",
+    "pill_failed": "Misslyckades",
+    "pill_repeats": "{{count}} gånger i rad",
+    "offline_bar": "Motorn är upptagen, återansluter automatiskt"
   },
   "bootstrap": {
     "checking": "Kontrollerar miljö…",
@@ -2321,7 +2342,9 @@
     "not_included": "Ingår inte i ditt abonnemang",
     "plan_ends": "till {{date}}",
     "details_failed": "Det gick inte att läsa in dina kontouppgifter ({{reason}}).",
-    "retry": "Försök igen"
+    "retry": "Försök igen",
+    "manage_profile": "Hantera profil",
+    "manage_plan": "Hantera abonnemang"
   },
   "cloudsync": {
     "unavailable": "Synkning är inte tillgänglig just nu.",
@@ -2369,7 +2392,8 @@
     "storage_temp": "Tillfälliga filer",
     "change": "Ändra…",
     "reset_default": "Återställ till standard",
-    "region_label": "Nedladdningsregion"
+    "region_label": "Nedladdningsregion",
+    "free_space": "{{free}} GB ledigt på den här enheten, cirka {{needed}} GB behövs"
   },
   "asr_missing": {
     "message": "Ingen tal-till-text-modell är installerad — den här funktionen behöver en för att transkribera ljud.",
@@ -2511,7 +2535,18 @@
     "staleTitle": "Uppdatering tillgänglig",
     "staleMessage": "Du använder VoiceStudio {{current}}, men {{latest}} är redan ute — det här felet kan redan vara åtgärdat där. Se den senaste versionen innan du rapporterar?",
     "staleView": "Visa uppdatering",
-    "staleFileAnyway": "Rapportera ändå"
+    "staleFileAnyway": "Rapportera ändå",
+    "summary_label": "Vad gick fel?",
+    "summary_placeholder": "En rad, till exempel: Dubbningen stannar vid 40 %",
+    "summary_required": "Lägg först till en beskrivning på en rad.",
+    "sent_title": "Detta skickas",
+    "sent_app": "Appversion och bygge",
+    "sent_system": "Operativsystem, GPU, minne och ledigt diskutrymme",
+    "sent_engines": "Vilka motorer som är aktiva",
+    "sent_logs": "Senaste raderna i motorloggen, utan filsökvägar och token",
+    "sent_pages": "Namn på nyligen besökta sidor",
+    "not_sent": "Skickas aldrig: ditt ljud, din text, dina röster eller filnamn.",
+    "submit": "Öppna GitHub-ärende"
   },
   "crash": {
     "notice_unclean": "Föregående session avslutades utan en ren avstängning för {{ago}} sedan. Det är ofta ofarligt — datorn sov, appen tvångsavslutades eller en VM/container stoppades.",
@@ -2907,6 +2942,7 @@
     "host_memory_exhausted": "Datorn fick slut på minne. Stäng andra minnestunga appar och webbläsarflikar, avlasta modeller du inte använder, generera ett kortare stycke eller välj en lättare TTS-motor.",
     "engine_dependency_missing": "Ett Python-paket som den här motorn behöver är inte installerat, så motorn kunde inte starta. Öppna Modellkatalogen, välj motorn och använd Installera / Reparera och starta sedan om VoiceStudio.",
     "reference_stt_missing": "Rösten saknar transkription och ingen tal-till-text-modell är installerad för att skapa en. Skriv in vad referensklippet säger i transkriptionsrutan (klipp upp till 20 sekunder) eller installera en tal-till-text-modell i Modellkatalogen, välj den och generera igen.",
+    "install_speech_model": "Installera taligenkänningsmodell",
     "proxy_gateway_error": "En proxy eller gateway mellan dig och VoiceStudio svarade HTTP {{status}} i stället för backend. Backend kanske fortfarande arbetar. Höj proxyns läs-timeout (i nginx proxy_read_timeout) för långa genereringar och kontrollera sedan Inställningar → Loggar → Backend.",
     "route_not_found": "Den körande VoiceStudio-backenden har ingen {{route}}-ändpunkt. Starta om VoiceStudio så att appen och backend matchar; om det kvarstår, uppdatera båda till samma version."
   },
@@ -3800,7 +3836,7 @@
       "capture_slow": "Telefonen hann inte bearbeta mikrofonljudet. Stäng andra appar eller använd din dator.",
       "preset_voice": "Röst {{number}}",
       "transfer": "{{received}} av {{total}}",
-      "privacy": "Uppgifter på enheten stannar på telefonen. Bara modellnedladdningar och din parkopplade dator använder nätverket.",
+      "privacy": "Uppgifter på enheten stannar på telefonen. Bara modellnedladdningar, rapporter som du väljer att skicka och din parkopplade dator använder nätverket.",
       "computer_feature": "Den här funktionen körs just nu på din dator. Du kan använda Tala och Diktering på telefonen utan parkoppling.",
       "accepted": "Licens godkänd",
       "not_accepted": "Licens inte godkänd",
@@ -3886,6 +3922,35 @@
       "retry": "Försök igen",
       "rate_limited": "För många rapporter från det här nätverket. Försök igen senare.",
       "invalid": "Rapporten kunde inte skickas. Uppdatera appen och försök igen."
+    }
+  },
+  "failureCause": {
+    "details": "Detaljer",
+    "fixes": "Föreslagna åtgärder",
+    "vram": {
+      "title": "GPU:n fick slut på minne",
+      "fix1": "Stäng andra GPU-appar",
+      "fix2": "Välj CPU eller en mindre motor"
+    },
+    "model_missing": {
+      "title": "Modellen är inte nedladdad",
+      "fix1": "Ladda ned den i Modellkatalogen",
+      "fix2": "Använd Åtgärda för att installera den"
+    },
+    "busy": {
+      "title": "Motorn är upptagen",
+      "fix1": "Vänta tills pågående jobb är klart",
+      "fix2": "Försök igen om en stund"
+    },
+    "timeout": {
+      "title": "Genereringen översteg tidsgränsen",
+      "fix1": "Prova ett kortare stycke",
+      "fix2": "Höj proxyns tidsgräns"
+    },
+    "bad_response": {
+      "title": "Oväntat svar från servern",
+      "fix1": "Kontrollera backend i Inställningar > Loggar",
+      "fix2": "Starta om VoiceStudio och försök igen"
     }
   }
 }

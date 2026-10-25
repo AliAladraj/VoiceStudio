@@ -277,11 +277,11 @@ before the token works for downloads.
 
 **Fix:**
 
-1. Open **Settings → API Keys** in the app and paste a working HF token (or set
+1. Open **Settings → Credentials** in the app and paste a working HF token (or set
    `HF_TOKEN` in your env). See [docs/setup/huggingface-token.md](../setup/huggingface-token.md).
 2. Visit https://huggingface.co/pyannote/speaker-diarization-3.1 while signed
    in with the same HF account → click **"Agree and access repository"**.
-3. Retry the job. The token state in **Settings → API Keys** should now show
+3. Retry the job. The token state in **Settings → Credentials** should now show
    the "App" row with a green check next to your username.
 
 If the token and license are already valid but an older build still reports
@@ -306,7 +306,7 @@ itself does not grant access.
 1. Visit https://huggingface.co/kyutai/pocket-tts while signed in, review the
    license and prohibited-use conditions, share the requested contact details,
    and accept the conditions.
-2. Open **Settings → API Keys** and save a read token from that same account.
+2. Open **Settings → Credentials** and save a read token from that same account.
 3. Open **Model Catalogue**, review and accept the PocketTTS terms locally,
    then retry. VoiceStudio stores this acknowledgement only on your machine.
 
@@ -765,6 +765,8 @@ A segmented download refuses a response whose status or Content-Range does not m
 
 Segmented download resume records are reused only with an existing partial file of the expected size and valid byte-range entries. If a partial file is missing, truncated, or oversized, or its sidecar is malformed, the download fetches those bytes again instead of treating preallocated zeros as completed data. Oversized partial files are resized before restarting so old trailing bytes cannot prevent verification of the new download. Stale checkpoints are removed before resizing or recreating partial files, so a failed fetch cannot make the next retry trust stale or zero-filled bytes. If that stale checkpoint cannot be removed, the restart stops before changing the partial file or destination.
 
+**Check space before installing.** The first-run runtime screen lists the folder the Python environment will be installed to together with the free space on that drive (highlighted when it is below the roughly 9 GB needed); use **Change** there to pick a roomier drive before pressing Install.
+
 **Disk filled up mid-install.** A model or engine install that runs out of space stops immediately (it is not retried with backoff) and reports how much space is free and where; free space or move the model cache to a larger volume, then retry. The download resumes from the part that already finished. During first-run setup, the one-time `uv` installer download is attempted up to three times (two retries) on connection resets, timeouts, and HTTP 5xx/429 before it reports failure.
 
 **Exports named after a video title.** Download and export names built from a video title replace characters Windows rejects (`< > : " / \ | ? *`, control characters, trailing dots/spaces, device names such as `CON`) with `_` on every OS, so `How to X: a guide?` exports as `How to X_ a guide_` instead of failing with `[Errno 22] Invalid argument`.
@@ -869,7 +871,8 @@ clears itself as soon as the job releases the event loop. If the dot turns
 The backend also never waits on its own log output: stdout/stderr go through a
 bounded buffer when the shell reads them through pipes, so a slow log reader (a
 model download's progress bar, a busy shell) can no longer freeze the event
-loop. If the buffer overflows, the log shows one `[log] N output chunk(s)
+loop. The request log goes through the same buffer, so it cannot block the loop
+either. If the buffer overflows, the log shows one `[log] N output chunk(s)
 dropped` line. Set `OMNIVOICE_BLOCKING_STDIO=1` to restore plain blocking
 writes. When the loop does stall, the backend log names the blocking call
 (`OMNIVOICE_LOOP_STALL_S`, default 4 s, `0` disables).
@@ -925,7 +928,10 @@ call.
 > the last error output). Use **Report this bug** from that notice — the crash
 > evidence is attached to the prefilled GitHub issue automatically, with home
 > paths scrubbed. The raw markers live next to the backend logs in
-> `backend_crash_markers.json`. Markers are per-version: after you update the
+> `backend_crash_markers.json`. The report dialog asks for a one-line
+> description (required, so issues are never titled just "[Bug]") and lists
+> exactly what will be sent before the browser opens; nothing is posted from
+> the app. Markers are per-version: after you update the
 > app, notices recorded by the previous version are cleaned up rather than
 > resurfacing — the update may well have fixed that crash.
 >
@@ -1347,11 +1353,34 @@ program it tried to launch, quotes what the backend last printed (or says it
 printed nothing, or that nothing was spawned), and adds a localized hint under
 the message:
 
+When the app recognises the cause it also names it in one line and puts the
+matching action first: **Choose another folder** for a missing environment, a
+write-permission error or a cloud-synced folder, **Copy diagnostics** for a
+native crash such as exit code `3221225477`, and **Retry** otherwise.
+
+The failure screen shows a single status pill (Starting, Recovering or Failed)
+with the elapsed time; repeated identical failures count up on the pill instead
+of redrawing the screen, and the raw message and log tail sit under **Details**.
+While a running engine is only busy, a slim bar at the bottom says it is
+reconnecting automatically; the workspace stays usable.
+
 - **`Could not start <program>: spawn UNKNOWN`** — Windows (or your security
   software) refused to run the Python runtime; `UNKNOWN` is how the OS reports a
   blocked executable. Add VoiceStudio's runtime folder to your antivirus
   exclusions (Windows Security → Virus & threat protection → Manage settings →
   Exclusions) and make sure it is not inside OneDrive, then retry.
+- **`… spawn UNKNOWN. Windows Smart App Control blocked it.`** — Smart App
+  Control (Windows 11) blocks programs without a known reputation, including the
+  runtime's `python.exe`; Event Viewer → Applications and Services Logs →
+  Microsoft → Windows → CodeIntegrity → Operational shows event 3077 for it.
+  Unlike antivirus it has **no per-app exceptions**, so an exclusion cannot help.
+  Either turn it off (Windows Security → App & browser control → Smart App
+  Control settings; Windows cannot turn it back on without a reset) or connect
+  VoiceStudio to an engine running on another computer. The app says this only
+  when it reads Smart App Control as on or in evaluation
+  (`VerifiedAndReputablePolicyState` 1 or 2 under
+  `HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy`); otherwise it shows the
+  antivirus advice above (#3224).
 - **`Backend did not answer on port 3900 within N s`** — the wait for the
   backend ran out. The budget (`OMNIVOICE_STARTUP_BUDGET_S`) now starts when the
   backend process is spawned, not when the launch began, defaults to 300 s (600 s
@@ -1418,6 +1447,11 @@ before setup finishes. If verification also fails, include the new setup log in
 your report rather than deleting saved voices or projects. The probe is also
 advisory now: if it still crashes natively, setup continues and the import
 verification decides whether the runtime works.
+
+The import verification now prints `VOICESTUDIO_IMPORT=<module>` before loading
+each runtime module, and a crash names the module in the error (`the import
+check stopped while importing "<module>"`). Include that line from the setup log
+in your report: the last `VOICESTUDIO_IMPORT=` line is the module that crashed.
 
 ### "Backend exited unexpectedly (exit code 3221225477)" while loading a model
 

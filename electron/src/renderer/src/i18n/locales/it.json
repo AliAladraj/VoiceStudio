@@ -96,6 +96,7 @@
     "brand_by": "{{brand}} di",
     "all": "Tutti",
     "allContributors": "Tutti i collaboratori",
+    "coreMaintainer": "Manutentore principale",
     "title": "VoiceStudio.sh Codice aperto",
     "design": "Crea una voce da una descrizione.",
     "dub": "Traduci e doppia audio o video.",
@@ -1875,7 +1876,9 @@
     "deepl_base_url_help": "Endpoint API DeepL personalizzato (impostazione predefinita: https://api.deepl.com/v2). Modifica per proxy/self-hosted.",
     "microsoft_base_url_help": "Endpoint personalizzato di traduttore di Azure (impostazione predefinita: https://api.cognitive.microsofttranslator.com).",
     "region": "Regione",
-    "aws_profile": "Profilo AWS"
+    "aws_profile": "Profilo AWS",
+    "deepl_key_placeholder": "DeepL chiave API",
+    "microsoft_key_placeholder": "Microsoft chiave API"
   },
   "about": {
     "architecture": "Architettura",
@@ -2056,6 +2059,7 @@
     "setup_access": "Consenti l’accesso in scrittura alla cartella dati dell’app, poi riprova.",
     "setup_unsupported_platform": "Questo Mac Intel non può eseguire il backend IA locale — PyTorch non fornisce wheel per macOS Intel. Connetti un backend remoto qui sotto; nessuna installazione locale necessaria.",
     "setup_wrong_architecture": "Questa è la versione Intel (x64) di VoiceStudio in esecuzione tramite Rosetta su un Mac Apple Silicon, quindi il backend IA locale non può essere installato. Chiudi l'app, installa sopra il DMG Apple Silicon (arm64) e riaprila: voci e progetti vengono mantenuti.",
+    "setup_missing_system_library": "Questo sistema Windows non ha il Microsoft Visual C++ 2015-2022 Redistributable (x64), necessario all’estensione audio di PyTorch. Installalo da Microsoft, poi premi Riprova.",
     "download_apple_silicon": "Scarica la versione Apple Silicon",
     "retry": "Riprova",
     "ready": "Motore pronto",
@@ -2077,8 +2081,25 @@
     "port_in_use_short": "La porta {{port}} è in uso",
     "proxy_bypass_help": "Chiudi completamente VoiceStudio, imposta HTTP_PROXY/HTTPS_PROXY con l’URL del proxy e NO_PROXY con gli host esclusi in un terminale, quindi avvia VoiceStudio da quel terminale. Riprovare nell’app aperta non carica le nuove variabili d’ambiente.",
     "hint_spawn_blocked": "Il sistema operativo o il software di sicurezza ha rifiutato di avviare il motore locale. Aggiungi la cartella di runtime di VoiceStudio alle esclusioni dell’antivirus (Windows: Sicurezza di Windows → Protezione da virus e minacce → Gestisci impostazioni → Esclusioni), assicurati che non sia in una cartella sincronizzata nel cloud come OneDrive e riprova.",
+    "hint_smart_app_control": "Il controllo intelligente delle app di Windows ha bloccato il motore locale. Non prevede eccezioni per singola app, quindi un’esclusione dell’antivirus non serve. Disattivalo in Sicurezza di Windows → Controllo app e browser → Impostazioni del controllo intelligente delle app (Windows non può riattivarlo senza un ripristino), oppure collega VoiceStudio a un motore in esecuzione su un altro computer, poi riprova.",
     "hint_slow_start": "Il motore era ancora in fase di avvio quando l’attesa è scaduta. I computer lenti, soprattutto senza GPU dedicata, e il primo avvio dopo un’installazione (l’antivirus analizza ogni file nuovo) possono richiedere diversi minuti. Chiudi le app che usano molta memoria e riprova; gli avvii successivi sono molto più rapidi.",
-    "hint_synced_folder": "Questa posizione si trova in una cartella sincronizzata nel cloud (OneDrive, Dropbox, iCloud Drive, Google Drive). I segnaposto solo online e il blocco dei file danneggiano l’ambiente Python. Sposta VoiceStudio in una normale cartella locale (ad esempio C:\\VoiceStudio su Windows o ~/VoiceStudio su macOS e Linux) e configuralo di nuovo."
+    "hint_synced_folder": "Questa posizione si trova in una cartella sincronizzata nel cloud (OneDrive, Dropbox, iCloud Drive, Google Drive). I segnaposto solo online e il blocco dei file danneggiano l’ambiente Python. Sposta VoiceStudio in una normale cartella locale (ad esempio C:\\VoiceStudio su Windows o ~/VoiceStudio su macOS e Linux) e configuralo di nuovo.",
+    "cause_smart_app_control": "Il Controllo intelligente delle app di Windows ha bloccato il motore",
+    "cause_spawn_blocked": "Un software di sicurezza ha impedito l’avvio del motore",
+    "cause_native_crash": "Il motore si è arrestato all’avvio (errore nativo)",
+    "cause_missing_env": "L’ambiente Python manca o è incompleto",
+    "cause_permission": "Nessun permesso di scrittura nella cartella del motore",
+    "cause_synced_folder": "La cartella del motore si trova in una cartella sincronizzata nel cloud",
+    "cause_slow_start": "Il motore è ancora in avvio su un computer lento",
+    "choose_folder": "Scegli un’altra cartella",
+    "copy_diagnostics": "Copia diagnostica",
+    "diagnostics_copied": "Diagnostica copiata",
+    "details": "Dettagli",
+    "pill_starting": "Avvio",
+    "pill_recovering": "Ripristino",
+    "pill_failed": "Non riuscito",
+    "pill_repeats": "{{count}} volte di fila",
+    "offline_bar": "Motore occupato, riconnessione automatica"
   },
   "bootstrap": {
     "checking": "Verifica dell'ambiente…",
@@ -2323,7 +2344,9 @@
     "not_included": "Non incluso nel tuo piano",
     "plan_ends": "fino al {{date}}",
     "details_failed": "Impossibile caricare i dettagli dell’account ({{reason}}).",
-    "retry": "Riprova"
+    "retry": "Riprova",
+    "manage_profile": "Gestisci profilo",
+    "manage_plan": "Gestisci piano"
   },
   "cloudsync": {
     "unavailable": "La sincronizzazione non è disponibile al momento.",
@@ -2371,7 +2394,8 @@
     "storage_temp": "File temporanei",
     "change": "Cambia…",
     "reset_default": "Ripristina le impostazioni predefinite",
-    "region_label": "Area di download"
+    "region_label": "Area di download",
+    "free_space": "{{free}} GB liberi su questa unità, ne servono circa {{needed}} GB"
   },
   "asr_missing": {
     "message": "Nessun modello di riconoscimento vocale è installato — questa funzione ne richiede uno per trascrivere l'audio.",
@@ -2513,7 +2537,18 @@
     "staleTitle": "Aggiornamento disponibile",
     "staleMessage": "Stai usando VoiceStudio {{current}}, ma {{latest}} è già disponibile: questo bug potrebbe essere già stato corretto. Vedere l'ultima versione prima di segnalare?",
     "staleView": "Vedi aggiornamento",
-    "staleFileAnyway": "Segnala comunque"
+    "staleFileAnyway": "Segnala comunque",
+    "summary_label": "Cosa è andato storto?",
+    "summary_placeholder": "Una riga, ad esempio: il doppiaggio si ferma al 40%",
+    "summary_required": "Aggiungi prima una descrizione di una riga.",
+    "sent_title": "Cosa verrà inviato",
+    "sent_app": "Versione e build dell’app",
+    "sent_system": "Sistema operativo, GPU, memoria e spazio libero su disco",
+    "sent_engines": "Quali motori sono attivi",
+    "sent_logs": "Ultime righe del log del motore, senza percorsi di file e token",
+    "sent_pages": "Nomi delle pagine visitate di recente",
+    "not_sent": "Mai inviati: audio, testi, voci o nomi di file.",
+    "submit": "Apri una issue su GitHub"
   },
   "crash": {
     "notice_unclean": "La sessione precedente è terminata senza una chiusura pulita {{ago}} fa. Spesso è innocuo: il computer è andato in sospensione, l'app è stata chiusa forzatamente o una VM/container si è fermata.",
@@ -2909,6 +2944,7 @@
     "host_memory_exhausted": "Il computer ha esaurito la memoria. Chiudi le altre app e le schede del browser che usano molta memoria, scarica i modelli inutilizzati, genera un brano più breve o scegli un motore TTS più leggero.",
     "engine_dependency_missing": "Manca un pacchetto Python necessario a questo motore, quindi non è stato possibile avviarlo. Apri il Catalogo modelli, seleziona il motore e usa Installa / Ripara, poi riavvia VoiceStudio.",
     "reference_stt_missing": "Questa voce non ha una trascrizione e non è installato alcun modello di riconoscimento vocale per crearne una. Scrivi ciò che dice la clip di riferimento nella casella della trascrizione (clip fino a 20 secondi), oppure installa un modello di riconoscimento vocale nel Catalogo modelli, selezionalo e genera di nuovo.",
+    "install_speech_model": "Installa un modello da voce a testo",
     "proxy_gateway_error": "Un proxy o gateway tra te e VoiceStudio ha risposto HTTP {{status}} al posto del backend. Il backend potrebbe essere ancora al lavoro. Aumenta il timeout di lettura del proxy (in nginx, proxy_read_timeout) per le generazioni lunghe, poi controlla Impostazioni → Log → Backend.",
     "route_not_found": "Il backend VoiceStudio in esecuzione non ha l'endpoint {{route}}. Riavvia VoiceStudio perché app e backend coincidano; se persiste, aggiorna entrambi alla stessa versione."
   },
@@ -3802,7 +3838,7 @@
       "capture_slow": "Questo telefono non ha elaborato l'audio del microfono abbastanza in fretta. Chiudi altre app o usa il computer.",
       "preset_voice": "Voce {{number}}",
       "transfer": "{{received}} di {{total}}",
-      "privacy": "Le attività sul dispositivo restano su questo telefono. Solo i download dei modelli e il computer associato usano la rete.",
+      "privacy": "Le attività sul dispositivo restano su questo telefono. Solo i download dei modelli, le segnalazioni che scegli di inviare e il computer associato usano la rete.",
       "computer_feature": "Questa funzione al momento viene eseguita sul computer. Parla e Dettatura funzionano su questo telefono senza associazione.",
       "accepted": "Licenza accettata",
       "not_accepted": "Licenza non accettata",
@@ -3888,6 +3924,35 @@
       "retry": "Riprova",
       "rate_limited": "Troppe segnalazioni da questa rete. Riprova più tardi.",
       "invalid": "Impossibile inviare questa segnalazione. Aggiorna l'app e riprova."
+    }
+  },
+  "failureCause": {
+    "details": "Dettagli",
+    "fixes": "Soluzioni suggerite",
+    "vram": {
+      "title": "La GPU ha esaurito la memoria",
+      "fix1": "Chiudi le altre app che usano la GPU",
+      "fix2": "Scegli la CPU o un motore più leggero"
+    },
+    "model_missing": {
+      "title": "Il modello non è scaricato",
+      "fix1": "Scaricalo nel Catalogo modelli",
+      "fix2": "Usa Ripara per installarlo"
+    },
+    "busy": {
+      "title": "Il motore è occupato",
+      "fix1": "Attendi la fine del lavoro in corso",
+      "fix2": "Riprova tra un momento"
+    },
+    "timeout": {
+      "title": "Generazione scaduta",
+      "fix1": "Prova un brano più breve",
+      "fix2": "Aumenta il timeout del proxy"
+    },
+    "bad_response": {
+      "title": "Risposta inattesa dal server",
+      "fix1": "Controlla il backend in Impostazioni > Log",
+      "fix2": "Riavvia VoiceStudio e riprova"
     }
   }
 }

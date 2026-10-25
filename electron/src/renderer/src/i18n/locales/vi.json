@@ -96,6 +96,7 @@
     "brand_by": "{{brand}} bởi",
     "all": "Tất cả",
     "allContributors": "Tất cả người đóng góp",
+    "coreMaintainer": "Người bảo trì cốt lõi",
     "title": "VoiceStudio.sh Mã nguồn mở",
     "design": "Thiết kế giọng nói từ mô tả.",
     "dub": "Dịch và lồng tiếng âm thanh hoặc video.",
@@ -1873,7 +1874,9 @@
     "deepl_base_url_help": "Điểm cuối API DeepL tùy chỉnh (mặc định: https://api.deepl.com/v2). Thay đổi cho proxy/tự lưu trữ.",
     "microsoft_base_url_help": "Điểm cuối Azure Translator tùy chỉnh (mặc định: https://api.cognitive.microsofttranslator.com).",
     "region": "Khu vực",
-    "aws_profile": "Hồ sơ AWS"
+    "aws_profile": "Hồ sơ AWS",
+    "deepl_key_placeholder": "DeepL khóa API",
+    "microsoft_key_placeholder": "Microsoft khóa API"
   },
   "about": {
     "architecture": "Kiến trúc",
@@ -2054,6 +2057,7 @@
     "setup_access": "Cho phép ghi vào thư mục dữ liệu của ứng dụng rồi thử lại.",
     "setup_unsupported_platform": "Máy Mac Intel này không thể chạy backend AI cục bộ — PyTorch không có wheel cho macOS Intel. Hãy kết nối backend từ xa bên dưới; không cần cài đặt cục bộ.",
     "setup_wrong_architecture": "Đây là bản VoiceStudio cho Intel (x64) đang chạy qua Rosetta trên máy Mac Apple Silicon, nên không thể cài backend AI cục bộ. Hãy thoát ứng dụng, cài đè bản DMG Apple Silicon (arm64) rồi mở lại — giọng nói và dự án của bạn vẫn được giữ nguyên.",
+    "setup_missing_system_library": "Hệ thống Windows này thiếu Microsoft Visual C++ 2015-2022 Redistributable (x64), thành phần mà tiện ích âm thanh của PyTorch cần đến. Hãy cài từ Microsoft rồi nhấn Thử lại.",
     "download_apple_silicon": "Tải bản Apple Silicon",
     "retry": "Thử lại",
     "ready": "Bộ máy sẵn sàng",
@@ -2075,8 +2079,25 @@
     "port_in_use_short": "Cổng {{port}} đang được sử dụng",
     "proxy_bypass_help": "Thoát hoàn toàn VoiceStudio, đặt HTTP_PROXY/HTTPS_PROXY thành URL proxy và NO_PROXY thành các máy chủ được loại trừ trong terminal, rồi mở VoiceStudio từ terminal đó. Thử lại trong ứng dụng đang mở không tải các biến môi trường mới.",
     "hint_spawn_blocked": "Hệ điều hành hoặc phần mềm bảo mật của bạn đã từ chối khởi chạy engine cục bộ. Hãy thêm thư mục runtime của VoiceStudio vào danh sách loại trừ của phần mềm diệt virus (Windows: Bảo mật Windows → Bảo vệ khỏi virus và mối đe dọa → Quản lý cài đặt → Loại trừ), đảm bảo thư mục này không nằm trong thư mục đồng bộ đám mây như OneDrive, rồi thử lại.",
+    "hint_smart_app_control": "Smart App Control của Windows đã chặn công cụ cục bộ. Tính năng này không có ngoại lệ cho từng ứng dụng nên loại trừ trong phần mềm diệt virus sẽ không giúp được. Hãy tắt nó trong Bảo mật Windows → Kiểm soát ứng dụng và trình duyệt → Cài đặt Smart App Control (Windows không thể bật lại nếu không đặt lại máy), hoặc kết nối VoiceStudio với công cụ chạy trên máy tính khác, rồi thử lại.",
     "hint_slow_start": "Engine vẫn đang khởi động thì hết thời gian chờ. Máy chậm, nhất là máy không có GPU rời, và lần khởi chạy đầu tiên sau khi cài đặt (phần mềm diệt virus quét mọi tệp mới) có thể mất vài phút. Hãy đóng các ứng dụng tốn nhiều bộ nhớ rồi thử lại; những lần khởi động sau nhanh hơn nhiều.",
-    "hint_synced_folder": "Vị trí này nằm trong thư mục đồng bộ đám mây (OneDrive, Dropbox, iCloud Drive, Google Drive). Các tệp giữ chỗ chỉ có trên mạng và việc khóa tệp làm hỏng môi trường Python. Hãy chuyển VoiceStudio sang một thư mục cục bộ thông thường (ví dụ C:\\VoiceStudio trên Windows hoặc ~/VoiceStudio trên macOS và Linux) rồi thiết lập lại."
+    "hint_synced_folder": "Vị trí này nằm trong thư mục đồng bộ đám mây (OneDrive, Dropbox, iCloud Drive, Google Drive). Các tệp giữ chỗ chỉ có trên mạng và việc khóa tệp làm hỏng môi trường Python. Hãy chuyển VoiceStudio sang một thư mục cục bộ thông thường (ví dụ C:\\VoiceStudio trên Windows hoặc ~/VoiceStudio trên macOS và Linux) rồi thiết lập lại.",
+    "cause_smart_app_control": "Smart App Control của Windows đã chặn công cụ",
+    "cause_spawn_blocked": "Phần mềm bảo mật đã chặn công cụ khởi động",
+    "cause_native_crash": "Công cụ bị sập khi khởi động (lỗi gốc)",
+    "cause_missing_env": "Môi trường Python bị thiếu hoặc chưa đầy đủ",
+    "cause_permission": "Không có quyền ghi vào thư mục của công cụ",
+    "cause_synced_folder": "Thư mục của công cụ nằm trong thư mục đồng bộ đám mây",
+    "cause_slow_start": "Công cụ vẫn đang khởi động trên máy chậm",
+    "choose_folder": "Chọn thư mục khác",
+    "copy_diagnostics": "Sao chép chẩn đoán",
+    "diagnostics_copied": "Đã sao chép chẩn đoán",
+    "details": "Chi tiết",
+    "pill_starting": "Đang khởi động",
+    "pill_recovering": "Đang khôi phục",
+    "pill_failed": "Thất bại",
+    "pill_repeats": "{{count}} lần liên tiếp",
+    "offline_bar": "Công cụ đang bận, tự động kết nối lại"
   },
   "bootstrap": {
     "checking": "Đang kiểm tra môi trường…",
@@ -2321,7 +2342,9 @@
     "not_included": "Không có trong gói của bạn",
     "plan_ends": "đến {{date}}",
     "details_failed": "Không thể tải thông tin tài khoản của bạn ({{reason}}).",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "manage_profile": "Quản lý hồ sơ",
+    "manage_plan": "Quản lý gói"
   },
   "cloudsync": {
     "unavailable": "Đồng bộ hiện không khả dụng.",
@@ -2369,7 +2392,8 @@
     "storage_temp": "Tệp tạm",
     "change": "Thay đổi…",
     "reset_default": "Đặt lại về mặc định",
-    "region_label": "Khu vực tải xuống"
+    "region_label": "Khu vực tải xuống",
+    "free_space": "Ổ đĩa này còn trống {{free}} GB, cần khoảng {{needed}} GB"
   },
   "asr_missing": {
     "message": "Chưa cài đặt mô hình chuyển giọng nói thành văn bản — tính năng này cần một mô hình để phiên âm.",
@@ -2511,7 +2535,18 @@
     "staleTitle": "Có bản cập nhật",
     "staleMessage": "Bạn đang dùng VoiceStudio {{current}}, nhưng {{latest}} đã ra mắt — lỗi này có thể đã được sửa ở đó. Xem bản phát hành mới nhất trước khi báo cáo?",
     "staleView": "Xem bản cập nhật",
-    "staleFileAnyway": "Vẫn báo cáo"
+    "staleFileAnyway": "Vẫn báo cáo",
+    "summary_label": "Đã xảy ra sự cố gì?",
+    "summary_placeholder": "Một dòng, ví dụ: Lồng tiếng dừng ở 40%",
+    "summary_required": "Hãy thêm mô tả một dòng trước.",
+    "sent_title": "Những gì sẽ được gửi",
+    "sent_app": "Phiên bản và bản dựng của ứng dụng",
+    "sent_system": "Hệ điều hành, GPU, bộ nhớ và dung lượng ổ đĩa trống",
+    "sent_engines": "Các công cụ đang hoạt động",
+    "sent_logs": "Các dòng nhật ký công cụ gần đây, đã xóa đường dẫn tệp và mã thông báo",
+    "sent_pages": "Tên các trang đã xem gần đây",
+    "not_sent": "Không bao giờ gửi: âm thanh, văn bản, giọng nói hoặc tên tệp của bạn.",
+    "submit": "Mở issue trên GitHub"
   },
   "crash": {
     "notice_unclean": "Phiên trước đã kết thúc mà không tắt đúng cách {{ago}} trước. Điều này thường vô hại — máy ngủ, ứng dụng bị buộc đóng, hoặc VM/container bị dừng.",
@@ -2907,6 +2942,7 @@
     "host_memory_exhausted": "Máy tính đã hết bộ nhớ. Hãy đóng các ứng dụng và thẻ trình duyệt khác dùng nhiều bộ nhớ, gỡ các mô hình không dùng, tạo đoạn ngắn hơn hoặc chọn công cụ TTS nhẹ hơn.",
     "engine_dependency_missing": "Một gói Python mà công cụ này cần chưa được cài đặt nên công cụ không thể khởi động. Hãy mở Danh mục mô hình, chọn công cụ và dùng Cài đặt / Sửa chữa, rồi khởi động lại VoiceStudio.",
     "reference_stt_missing": "Giọng này không có bản chép lời và chưa cài mô hình chuyển giọng nói thành văn bản để tạo bản chép. Hãy nhập nội dung đoạn âm thanh tham chiếu vào ô bản chép lời (đoạn tối đa 20 giây), hoặc cài mô hình chuyển giọng nói thành văn bản trong Danh mục mô hình, chọn nó rồi tạo lại.",
+    "install_speech_model": "Cài đặt mô hình chuyển giọng nói thành văn bản",
     "proxy_gateway_error": "Một proxy hoặc cổng giữa bạn và VoiceStudio đã trả lời HTTP {{status}} thay cho backend. Backend có thể vẫn đang xử lý. Hãy tăng thời gian chờ đọc của proxy (với nginx là proxy_read_timeout) cho các lần tạo dài, rồi kiểm tra Cài đặt → Nhật ký → Backend.",
     "route_not_found": "Backend VoiceStudio đang chạy không có điểm cuối {{route}}. Hãy khởi động lại VoiceStudio để ứng dụng và backend khớp nhau; nếu vẫn lỗi, hãy cập nhật cả hai lên cùng một phiên bản."
   },
@@ -3800,7 +3836,7 @@
       "capture_slow": "Điện thoại này không xử lý âm thanh micrô đủ nhanh. Hãy đóng các ứng dụng khác hoặc dùng máy tính của bạn.",
       "preset_voice": "Giọng {{number}}",
       "transfer": "{{received}} trên {{total}}",
-      "privacy": "Tác vụ trên thiết bị ở lại điện thoại này. Chỉ việc tải mô hình và máy tính đã ghép nối dùng mạng.",
+      "privacy": "Tác vụ trên thiết bị ở lại điện thoại này. Chỉ việc tải mô hình, báo cáo bạn chọn gửi và máy tính đã ghép nối dùng mạng.",
       "computer_feature": "Tính năng này hiện chạy trên máy tính của bạn. Bạn có thể dùng Nói và Đọc chính tả trên điện thoại này mà không cần ghép nối.",
       "accepted": "Đã chấp nhận giấy phép",
       "not_accepted": "Chưa chấp nhận giấy phép",
@@ -3886,6 +3922,35 @@
       "retry": "Thử lại",
       "rate_limited": "Quá nhiều báo cáo từ mạng này. Hãy thử lại sau.",
       "invalid": "Không thể gửi báo cáo này. Hãy cập nhật ứng dụng và thử lại."
+    }
+  },
+  "failureCause": {
+    "details": "Chi tiết",
+    "fixes": "Cách khắc phục gợi ý",
+    "vram": {
+      "title": "GPU đã hết bộ nhớ",
+      "fix1": "Đóng các ứng dụng khác dùng GPU",
+      "fix2": "Chọn CPU hoặc engine nhỏ hơn"
+    },
+    "model_missing": {
+      "title": "Chưa tải mô hình",
+      "fix1": "Tải về trong Danh mục mô hình",
+      "fix2": "Dùng Sửa để cài đặt"
+    },
+    "busy": {
+      "title": "Engine đang bận",
+      "fix1": "Chờ tác vụ hiện tại hoàn tất",
+      "fix2": "Thử lại sau giây lát"
+    },
+    "timeout": {
+      "title": "Quá thời gian tạo",
+      "fix1": "Thử đoạn ngắn hơn",
+      "fix2": "Tăng thời gian chờ của proxy"
+    },
+    "bad_response": {
+      "title": "Phản hồi bất thường từ máy chủ",
+      "fix1": "Kiểm tra backend trong Cài đặt > Nhật ký",
+      "fix2": "Khởi động lại VoiceStudio rồi thử lại"
     }
   }
 }

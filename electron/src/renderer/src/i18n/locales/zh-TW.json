@@ -96,6 +96,7 @@
     "brand_by": "{{brand}} 作者",
     "all": "全部",
     "allContributors": "所有貢獻者",
+    "coreMaintainer": "核心維護者",
     "title": "VoiceStudio.sh 開源",
     "design": "根據描述設計聲音。",
     "dub": "翻譯並配音音訊或影片。",
@@ -1873,7 +1874,9 @@
     "deepl_base_url_help": "自訂 DeepL API 端點（預設：https://api.deepl.com/v2）。變更為代理/自架。",
     "microsoft_base_url_help": "自訂 Azure 翻譯端點（預設：https://api.cognitive.microsofttranslator.com）。",
     "region": "區域",
-    "aws_profile": "AWS 設定檔"
+    "aws_profile": "AWS 設定檔",
+    "deepl_key_placeholder": "DeepLAPI 金鑰",
+    "microsoft_key_placeholder": "MicrosoftAPI 金鑰"
   },
   "about": {
     "architecture": "大樓",
@@ -2054,6 +2057,7 @@
     "setup_access": "請允許寫入應用程式資料夾，然後重試。",
     "setup_unsupported_platform": "此 Intel Mac 無法執行本機 AI 後端——PyTorch 未提供 macOS Intel 建置。請在下方連接遠端後端，無需本機安裝。",
     "setup_wrong_architecture": "這是透過 Rosetta 在 Apple Silicon Mac 上執行的 VoiceStudio Intel (x64) 版本，因此無法安裝本機 AI 後端。請結束應用程式，覆蓋安裝 Apple Silicon (arm64) 版 DMG 後重新開啟——你的聲音與專案都會保留。",
+    "setup_missing_system_library": "此 Windows 系統缺少 PyTorch 音訊擴充功能所需的 Microsoft Visual C++ 2015-2022 可再散布元件 (x64)。請從 Microsoft 安裝後按一下重試。",
     "download_apple_silicon": "下載 Apple Silicon 版本",
     "ready": "引擎已就緒",
     "show_log": "顯示日誌",
@@ -2075,8 +2079,25 @@
     "port_in_use_short": "連接埠 {{port}} 已被占用",
     "proxy_bypass_help": "完全結束 VoiceStudio，在終端機中將 HTTP_PROXY/HTTPS_PROXY 設為代理 URL，將 NO_PROXY 設為排除的主機，然後從該終端機啟動 VoiceStudio。在目前的應用程式中重試不會載入新的環境變數。",
     "hint_spawn_blocked": "作業系統或安全性軟體拒絕啟動本機引擎。請將 VoiceStudio 的執行階段資料夾加入防毒軟體的排除項目（Windows：Windows 安全性 → 病毒與威脅防護 → 管理設定 → 排除項目），並確認它不在 OneDrive 等雲端同步資料夾內，然後重試。",
+    "hint_smart_app_control": "Windows 智慧型應用程式控制封鎖了本機引擎。它不支援針對個別應用程式設定例外，因此新增防毒軟體排除項目沒有幫助。請在 Windows 安全性 → 應用程式與瀏覽器控制 → 智慧型應用程式控制設定 中將其關閉（未重設系統就無法再次開啟），或將 VoiceStudio 連線到另一台電腦上執行的引擎，然後重試。",
     "hint_slow_start": "等待逾時時，引擎仍在啟動。電腦較慢（尤其是沒有獨立顯示卡），以及安裝後的第一次啟動（防毒軟體會掃描每個新檔案）可能需要幾分鐘。請關閉佔用大量記憶體的應用程式後重試；之後的啟動會快很多。",
-    "hint_synced_folder": "此位置位於雲端同步資料夾（OneDrive、Dropbox、iCloud Drive、Google Drive）內。僅限線上的預留位置檔案與檔案鎖定會破壞 Python 環境。請將 VoiceStudio 移到一般本機資料夾（例如 Windows 上的 C:\\VoiceStudio，或 macOS 與 Linux 上的 ~/VoiceStudio），然後重新設定。"
+    "hint_synced_folder": "此位置位於雲端同步資料夾（OneDrive、Dropbox、iCloud Drive、Google Drive）內。僅限線上的預留位置檔案與檔案鎖定會破壞 Python 環境。請將 VoiceStudio 移到一般本機資料夾（例如 Windows 上的 C:\\VoiceStudio，或 macOS 與 Linux 上的 ~/VoiceStudio），然後重新設定。",
+    "cause_smart_app_control": "Windows 智慧型應用程式控制封鎖了引擎",
+    "cause_spawn_blocked": "安全性軟體阻止了引擎啟動",
+    "cause_native_crash": "引擎在啟動時當機（原生錯誤）",
+    "cause_missing_env": "Python 環境遺失或不完整",
+    "cause_permission": "沒有寫入引擎資料夾的權限",
+    "cause_synced_folder": "引擎資料夾位於雲端同步資料夾內",
+    "cause_slow_start": "引擎在較慢的電腦上仍在啟動",
+    "choose_folder": "選擇其他資料夾",
+    "copy_diagnostics": "複製診斷資訊",
+    "diagnostics_copied": "已複製診斷資訊",
+    "details": "詳細資訊",
+    "pill_starting": "正在啟動",
+    "pill_recovering": "正在復原",
+    "pill_failed": "失敗",
+    "pill_repeats": "連續 {{count}} 次",
+    "offline_bar": "引擎忙碌中，正在自動重新連線"
   },
   "bootstrap": {
     "checking": "正在檢查環境…",
@@ -2321,7 +2342,9 @@
     "not_included": "不在你的方案中",
     "plan_ends": "至 {{date}}",
     "details_failed": "無法載入你的帳戶詳細資料（{{reason}}）。",
-    "retry": "重試"
+    "retry": "重試",
+    "manage_profile": "管理個人資料",
+    "manage_plan": "管理方案"
   },
   "cloudsync": {
     "unavailable": "同步目前無法使用。",
@@ -2369,7 +2392,8 @@
     "storage_temp": "暫存檔案",
     "change": "變更…",
     "reset_default": "重設為預設值",
-    "region_label": "下載區域"
+    "region_label": "下載區域",
+    "free_space": "此磁碟可用空間 {{free}} GB，大約需要 {{needed}} GB"
   },
   "asr_missing": {
     "message": "尚未安裝語音轉文字模型 — 此功能需要一個模型來轉錄音訊。",
@@ -2511,7 +2535,18 @@
     "staleTitle": "有可用更新",
     "staleMessage": "您正在使用 VoiceStudio {{current}}，但 {{latest}} 已經發布——這個錯誤可能已在新版本中修復。回報前先查看最新版本？",
     "staleView": "查看更新",
-    "staleFileAnyway": "仍然回報"
+    "staleFileAnyway": "仍然回報",
+    "summary_label": "發生了什麼問題？",
+    "summary_placeholder": "一句話描述，例如：配音在 40% 處停止",
+    "summary_required": "請先填寫一句話描述。",
+    "sent_title": "將傳送的內容",
+    "sent_app": "應用程式版本與組建編號",
+    "sent_system": "作業系統、GPU、記憶體與可用磁碟空間",
+    "sent_engines": "目前啟用的引擎",
+    "sent_logs": "最近的引擎記錄行（已移除檔案路徑與權杖）",
+    "sent_pages": "最近造訪的頁面名稱",
+    "not_sent": "絕不傳送：你的音訊、文字、聲音或檔案名稱。",
+    "submit": "開啟 GitHub Issue"
   },
   "crash": {
     "notice_unclean": "上一個工作階段在 {{ago}}前未正常關閉就結束了。這通常無害 —— 電腦進入了睡眠、應用程式被強制結束，或某個虛擬機/容器停止了。",
@@ -2907,6 +2942,7 @@
     "host_memory_exhausted": "電腦記憶體不足。請關閉其他佔用記憶體的應用程式和瀏覽器分頁，卸載不用的模型，產生較短的片段，或選擇更輕量的 TTS 引擎。",
     "engine_dependency_missing": "此引擎所需的 Python 套件尚未安裝，因此引擎無法啟動。請開啟模型目錄，選擇該引擎並使用 安裝 / 修復，然後重新啟動 VoiceStudio。",
     "reference_stt_missing": "此聲音沒有逐字稿，也沒有安裝可用於產生逐字稿的語音轉文字模型。請在逐字稿欄位輸入參考音訊所說的內容（音訊不超過 20 秒），或在模型目錄中安裝並選擇一個語音轉文字模型，然後重新產生。",
+    "install_speech_model": "安裝語音辨識模型",
     "proxy_gateway_error": "你與 VoiceStudio 之間的代理或閘道回傳了 HTTP {{status}}，而不是後端的回應。後端可能仍在處理。對於較長的產生作業，請調高代理的讀取逾時（nginx 為 proxy_read_timeout），然後查看 設定 → 記錄 → 後端。",
     "route_not_found": "正在執行的 VoiceStudio 後端沒有 {{route}} 端點。請重新啟動 VoiceStudio 使應用程式與後端一致；若仍然如此，請將兩者更新到同一版本。"
   },
@@ -3800,7 +3836,7 @@
       "capture_slow": "這支手機處理麥克風音訊不夠快。請關閉其他 App，或使用電腦。",
       "preset_voice": "語音 {{number}}",
       "transfer": "{{received}}，共 {{total}}",
-      "privacy": "裝置端工作只在這支手機上執行。只有模型下載和已配對的電腦會使用網路。",
+      "privacy": "裝置端工作只在這支手機上執行。只有模型下載、你選擇傳送的檢舉和已配對的電腦會使用網路。",
       "computer_feature": "此功能目前在電腦上執行。無需配對，即可在這支手機上使用朗讀和聽寫。",
       "accepted": "已接受授權",
       "not_accepted": "未接受授權",
@@ -3886,6 +3922,35 @@
       "retry": "重試",
       "rate_limited": "此網路的檢舉次數過多,請稍後再試。",
       "invalid": "無法傳送此檢舉。請更新應用程式後重試。"
+    }
+  },
+  "failureCause": {
+    "details": "詳細資料",
+    "fixes": "建議的解決辦法",
+    "vram": {
+      "title": "GPU 記憶體不足",
+      "fix1": "關閉其他使用 GPU 的應用程式",
+      "fix2": "改用 CPU 或較小的引擎"
+    },
+    "model_missing": {
+      "title": "尚未下載模型",
+      "fix1": "在模型目錄中下載",
+      "fix2": "點選修復進行安裝"
+    },
+    "busy": {
+      "title": "引擎忙碌中",
+      "fix1": "等待目前工作完成",
+      "fix2": "稍後再試"
+    },
+    "timeout": {
+      "title": "產生逾時",
+      "fix1": "嘗試較短的文字",
+      "fix2": "調高代理伺服器逾時時間"
+    },
+    "bad_response": {
+      "title": "伺服器回應異常",
+      "fix1": "在 設定 > 記錄 中檢查後端",
+      "fix2": "重新啟動 VoiceStudio 後再試"
     }
   }
 }

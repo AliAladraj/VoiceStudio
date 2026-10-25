@@ -470,6 +470,11 @@ def _expand_abbreviations(text: str, lang: str) -> str:
 
     def _repl(m: re.Match) -> str:
         expansion = lookup.get(m.group(0), m.group(0))
+        # "No.5" / "Nr.5": the digit guard admits a number glued to the
+        # abbreviation, and the expansion must not be glued to it in turn
+        # ("number5" is a word the number pass leaves alone).
+        if expansion != m.group(0) and m.string[m.end():m.end() + 1].isdigit():
+            expansion += " "
         if (m.group(0).lower() in _SENTENCE_FINAL_ABBREVIATIONS
                 and _NEXT_SENTENCE_RE.match(m.string, m.end())):
             return expansion + "."
@@ -601,7 +606,14 @@ def _numbers_to_words(text: str, lang: str) -> str:
             if m.group(2) is None:
                 return spoken
             cents = int(m.group(2))
-            return f"{spoken}, {num2words(cents, lang='en')} {subunit if cents == 1 else subunits}"
+            # "$0.50" is "fifty cents" and "$5.00" is "five dollars": the
+            # zero part is not spoken ("zero dollars, fifty cents").
+            if cents == 0:
+                return spoken
+            spoken_cents = f"{num2words(cents, lang='en')} {subunit if cents == 1 else subunits}"
+            if whole == 0:
+                return spoken_cents
+            return f"{spoken}, {spoken_cents}"
 
         text = _CURRENCY_RE.sub(lambda m: _safe(m, _currency), text)
 
@@ -622,9 +634,25 @@ def _numbers_to_words(text: str, lang: str) -> str:
 
     if lang in _DECIMAL_LANGS:
         def _decimal(m: re.Match) -> str:
-            if _thousands_group(lang, m.group(2)):
+            whole, fraction = m.group(1), m.group(2)
+            if _thousands_group(lang, fraction):
                 return m.group(0)
-            return num2words(float(f"{m.group(1)}.{m.group(2)}"), lang=lang)
+            spoken = num2words(float(f"{whole}.{fraction}"), lang=lang)
+            # A float has no trailing zeros: "3.0" read as "three" and "2.50"
+            # as "two point five". Speak the zeros that were written.
+            # Unicode digits (fullwidth, Arabic-Indic) count as zeros too.
+            ascii_fraction = "".join(str(unicodedata.digit(c, 0)) for c in fraction)
+            zeros = len(ascii_fraction) - len(ascii_fraction.rstrip("0"))
+            if zeros:
+                from num2words import CONVERTER_CLASSES
+                point = getattr(CONVERTER_CLASSES.get(lang), "pointword", None)
+                if not isinstance(point, str):
+                    return spoken
+                zero = num2words(0, lang=lang)
+                if zeros == len(ascii_fraction):
+                    spoken = f"{num2words(int(whole), lang=lang)} {point}"
+                spoken += f" {zero}" * zeros
+            return spoken
 
         text = _DECIMAL_RE.sub(lambda m: _safe(m, _decimal), text)
 

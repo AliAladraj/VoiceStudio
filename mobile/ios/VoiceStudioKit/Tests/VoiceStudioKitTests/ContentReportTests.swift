@@ -174,11 +174,18 @@ private let speak = ContentReportSubject.phone(.speak, id: "take", repo: "k2-fsa
 }
 
 @Test func contentReportBaseURLAndAppVersionPerBuild() {
-    #expect(ContentReportClient.baseURL(debug: true).absoluteString == "https://dev-appapi.voicestudio.sh")
-    #expect(ContentReportClient.baseURL(debug: false).absoluteString == "https://appapi.voicestudio.sh")
+    // Production unless the build carries an https override; debug builds get no special default.
+    #expect(ContentReportClient.baseURL(info: nil).absoluteString == "https://appapi.voicestudio.sh")
+    #expect(ContentReportClient.baseURL(info: ["VoiceStudioContentReportsURL": " "]).absoluteString == "https://appapi.voicestudio.sh")
+    #expect(ContentReportClient.baseURL(info: ["VoiceStudioContentReportsURL": "http://dev-appapi.voicestudio.sh"]).absoluteString == "https://appapi.voicestudio.sh")
+    #expect(ContentReportClient.baseURL(info: ["VoiceStudioContentReportsURL": "https://dev-appapi.voicestudio.sh"]).absoluteString == "https://dev-appapi.voicestudio.sh")
     #expect(ContentReportClient.appVersion(info: ["VoiceStudioAppVersion": "0.5.7-beta.2", "CFBundleShortVersionString": "0.5.7"]) == "0.5.7-beta.2")
     #expect(ContentReportClient.appVersion(info: ["CFBundleShortVersionString": "0.5.7"]) == "0.5.7")
     #expect(ContentReportClient.appVersion(info: nil) == "unknown")
+    // About and licence receipts show the same full version as Android's versionName.
+    #expect(AppVersion.full(info: ["VoiceStudioAppVersion": "0.5.7-beta.2", "CFBundleShortVersionString": "0.5.7"]) == "0.5.7-beta.2")
+    #expect(AppVersion.full(info: ["VoiceStudioAppVersion": " ", "CFBundleShortVersionString": "0.5.7"]) == "0.5.7")
+    #expect(AppVersion.full(info: nil) == nil)
     #expect(ContentReportClient.appVersion(info: ["VoiceStudioAppVersion": "1.0 (beta)"]) == "1.0beta")
 }
 
@@ -194,4 +201,15 @@ private let speak = ContentReportSubject.phone(.speak, id: "take", repo: "k2-fsa
     #expect(ContentReportSubject.phone(.speak, id: old.id.uuidString, repo: old.modelRepo, revision: old.modelRevision).modelID == "unknown")
     let voice = try JSONDecoder().decode(PhoneVoice.self, from: data(#"{"id":"6F9619FF-8B86-D011-B42D-00CF4FC964FF","name":"V","transcript":"t","createdAt":0,"consentAt":0,"sampleRate":24000}"#))
     #expect(voice.modelRepo == nil)
+}
+
+@Test func dubReportNamesTheRevisionOnlyWhileThePinMatches() throws {
+    // #3268 review: a dub saved before a catalogue update must not blame the new revision.
+    let catalogue = try ModelCatalogue.decode(Data(contentsOf: repository.appendingPathComponent("mobile/contract/models.json")))
+    let clone = try #require(catalogue.models.first { $0.capability == .clone })
+    let current = try #require(phoneDubVoiceModel(pins: [clone.id: try phoneModelPin(clone)], in: catalogue.models))
+    #expect(current.repo == clone.repo && current.revision == clone.revision)
+    let stale = try #require(phoneDubVoiceModel(pins: [clone.id: "stale-pin"], in: catalogue.models))
+    #expect(stale.repo == clone.repo && stale.revision == nil)
+    #expect(phoneDubVoiceModel(pins: [:], in: catalogue.models) == nil)
 }

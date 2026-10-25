@@ -28,7 +28,9 @@ metadata and the backend fallback mirror it.
 
 ### Added
 
-- The phone apps have a Report action on every generated result: pick a reason, add an optional note, and it reaches the VoiceStudio team only when you tap Send (#3268)
+- Bug reports and Settings → Diagnostics now show the build commit next to the version, so beta and preview builds of one version can be told apart (#3293)
+- The backend and Docker images report their build commit in `/system/info` and in bug reports (#3293)
+- The phone apps have a Report action on every generated result: pick a reason, add an optional note, and it reaches the VoiceStudio team only when you tap Send (#3268, #3276, #3281)
 - The phone apps run speech, dictation, voice cloning and dubbing on the phone itself, offline once you download the models; pairing a computer is optional ([guide](docs/mobile.md)) (#2969)
 - Beta update channel: choose Stable or Beta under Settings → Updates; betas are `-beta.N` prereleases that never reach Stable users, and Docker gets matching `:beta` tags ([guide](docs/update-channels.md)) (#3175)
 
@@ -38,6 +40,13 @@ metadata and the backend fallback mirror it.
 
 ### Fixed
 
+- A runtime setup crash during the final import check now names the module that crashed, so reports stop ending at an unrelated log line (#3293)
+- Settings → Updates lists only desktop releases; phone app releases no longer appear there for Beta users (#3292)
+- Android release builds use version codes Google Play accepts for a first upload (#3311)
+- Phone reports go to the production server in every build; testers point a build at the dev server with `VOICESTUDIO_CONTENT_REPORTS_URL` (#3324)
+- One-click engine installs fall back to the `uv` on your PATH when the app has none of its own to offer, instead of failing on an empty `uv` setting (#3284)
+- iPhone Settings → About and licence receipts show the full app version (`0.5.7-beta.2`), like Android, instead of only `0.5.7` (#3273)
+- A voice with no transcript now offers a one-click speech-to-text model install instead of only an error (#3269)
 - Saved voice and recent take rows show their hover actions on a solid background, so the buttons stay visible over long names (#3263)
 - Saved dub loads confirm before replacing unsaved work, recheck edits made during loading and stop when you leave the workspace (#3234)
 - Large VirusTotal uploads upgrade the documented legacy upload URL to HTTPS before sending files or credentials (#3238)
@@ -71,6 +80,7 @@ metadata and the backend fallback mirror it.
 - Model licence dialog is wider and scrolls as one area with the buttons pinned, and follows macOS, Windows and Linux dialog conventions (#3160)
 - Bug reports now include your OS, memory, free disk and whether the Python runtime exists, even when the backend never started, plus flags for risky install paths such as OneDrive or non-ASCII folders (#3156)
 - Bug reports no longer hang on a stalled drive, and report free disk and the uv tool correctly on first run and in source checkouts (#3170)
+- An interrupted CosyVoice 3 download no longer shows as Installed in Model Catalogue: it is marked incomplete and offered for download again (#3112)
 - Older synthesized takes play again with accurate play/pause controls after a newer generation (#3102)
 - Generation-complete notifications appear above the workspace instead of covering synthesis controls (#3102)
 - Generated speech no longer starts and ends with silence, and `[pause]` markers give exactly the pause you asked for (Raw preset and explicit durations untouched) (#3080)
@@ -172,6 +182,7 @@ metadata and the backend fallback mirror it.
 
 ### Docs
 
+- `funding.json` at the repository root publishes how to fund VoiceStudio in the [funding.json](https://fundingjson.org) format, matching the tiers in SPONSORS.md (#3294)
 - Google Play store listing, graphics and Play Console answers for the Android app are ready for the owner to submit (#3257, #3258)
 - `SPONSORS.md` now states what each sponsorship tier gives, when recognition starts, and what sponsorship does not buy, and the README and inquiry form point to it (#3172)
 - OmniVoice GGUF docs state that the installers do not ship its native binary yet (#3026) — thanks @DestinyQJY!
@@ -184,6 +195,8 @@ metadata and the backend fallback mirror it.
 
 ### CI
 
+- The mobile workflow captures Google Play phone screenshots of the Android app on an emulator and keeps them as a download (#3277)
+- Pull requests that only change Python, docs, mobile or non-Electron workflows skip the Electron-only CI jobs (UI crawler, Desktop UI, native package), cutting their CI time from ~26 to ~8 minutes; deleted or renamed files, unknown paths and a failed lookup always run everything (#3271)
 - CI cancels a pull request's older run when it is pushed again, older Docker builds on main are cancelled, and review-bot comments no longer take a runner, so mass pushes stop flooding the queue (#3260)
 - Release notes open with the installer signing table, so you see which downloads are signed before the changelog (#3255)
 - macOS release builds retry once when Apple's ticket server drops the notarization staple, instead of failing the whole release (#3244)
@@ -339,6 +352,7 @@ metadata and the backend fallback mirror it.
 **Highlights**
 
 - Preview iOS and Android companion apps for your own VoiceStudio
+- MLX-Audio preserves supported voice settings and reports model failures instead of silently retrying with a default voice (#2739) — thanks @BichengWang!
 - Opt-in Beta update channel: get fixes early from Settings → Updates, and roll onto the next stable release automatically
 
 ### Changed

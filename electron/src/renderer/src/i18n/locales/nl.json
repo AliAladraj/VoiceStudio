@@ -96,6 +96,7 @@
     "brand_by": "{{brand}} door",
     "all": "Allen",
     "allContributors": "Alle bijdragers",
+    "coreMaintainer": "Kernbeheerder",
     "title": "VoiceStudio.sh Open source",
     "design": "Ontwerp een stem op basis van een beschrijving.",
     "dub": "Vertaal en dub audio of video.",
@@ -1873,7 +1874,9 @@
     "deepl_base_url_help": "Aangepast DeepL API-eindpunt (standaard: https://api.deepl.com/v2). Wijzigen voor proxy/zelf-gehost.",
     "microsoft_base_url_help": "Aangepast Azure Translator-eindpunt (standaard: https://api.cognitive.microsofttranslator.com).",
     "region": "Regio",
-    "aws_profile": "AWS-profiel"
+    "aws_profile": "AWS-profiel",
+    "deepl_key_placeholder": "DeepL API-sleutel",
+    "microsoft_key_placeholder": "Microsoft API-sleutel"
   },
   "about": {
     "architecture": "Architectuur",
@@ -2054,6 +2057,7 @@
     "setup_access": "Sta schrijftoegang toe tot de gegevensmap van de app en probeer het opnieuw.",
     "setup_unsupported_platform": "Deze Intel-Mac kan de lokale AI-backend niet uitvoeren — PyTorch levert geen macOS-Intel-wheels. Verbind hieronder een externe backend; geen lokale installatie nodig.",
     "setup_wrong_architecture": "Dit is de Intel-versie (x64) van VoiceStudio die via Rosetta op een Mac met Apple Silicon draait, dus de lokale AI-backend kan niet worden geïnstalleerd. Sluit de app, installeer de Apple Silicon-DMG (arm64) eroverheen en open hem opnieuw — je stemmen en projecten blijven behouden.",
+    "setup_missing_system_library": "Op dit Windows-systeem ontbreekt het Microsoft Visual C++ 2015-2022 Redistributable (x64) dat de PyTorch-audio-extensie nodig heeft. Installeer het via Microsoft en druk daarna op Opnieuw proberen.",
     "download_apple_silicon": "Apple Silicon-versie downloaden",
     "ready": "Engine gereed",
     "show_log": "Logboek tonen",
@@ -2075,8 +2079,25 @@
     "port_in_use_short": "Poort {{port}} is bezet",
     "proxy_bypass_help": "Sluit VoiceStudio volledig af, stel in een terminal HTTP_PROXY/HTTPS_PROXY in op je proxy-URL en NO_PROXY op de uitgesloten hosts en start VoiceStudio vanuit die terminal. Opnieuw proberen in de geopende app laadt geen nieuwe omgevingsvariabelen.",
     "hint_spawn_blocked": "Je besturingssysteem of beveiligingssoftware weigerde de lokale engine te starten. Voeg de runtimemap van VoiceStudio toe aan de uitzonderingen van je antivirus (Windows: Windows-beveiliging → Virus- en bedreigingsbeveiliging → Instellingen beheren → Uitsluitingen), controleer dat de map niet in een met de cloud gesynchroniseerde map zoals OneDrive staat en probeer het opnieuw.",
+    "hint_smart_app_control": "Slimme app-beheer van Windows heeft de lokale engine geblokkeerd. Het kent geen uitzonderingen per app, dus een uitsluiting in je antivirus helpt niet. Zet het uit via Windows-beveiliging → App- en browserbeheer → Instellingen voor Slimme app-beheer (Windows kan het zonder reset niet weer inschakelen), of verbind VoiceStudio met een engine op een andere computer en probeer het opnieuw.",
     "hint_slow_start": "De engine was nog aan het opstarten toen de wachttijd verstreek. Trage computers, vooral zonder aparte GPU, en de eerste start na een installatie (de antivirus scant elk nieuw bestand) kunnen enkele minuten duren. Sluit geheugenintensieve apps en probeer het opnieuw; latere starts gaan veel sneller.",
-    "hint_synced_folder": "Deze locatie staat in een met de cloud gesynchroniseerde map (OneDrive, Dropbox, iCloud Drive, Google Drive). Alleen-online-plaatsaanduidingen en bestandsvergrendeling breken de Python-omgeving. Verplaats VoiceStudio naar een gewone lokale map (bijvoorbeeld C:\\VoiceStudio op Windows of ~/VoiceStudio op macOS en Linux) en stel het opnieuw in."
+    "hint_synced_folder": "Deze locatie staat in een met de cloud gesynchroniseerde map (OneDrive, Dropbox, iCloud Drive, Google Drive). Alleen-online-plaatsaanduidingen en bestandsvergrendeling breken de Python-omgeving. Verplaats VoiceStudio naar een gewone lokale map (bijvoorbeeld C:\\VoiceStudio op Windows of ~/VoiceStudio op macOS en Linux) en stel het opnieuw in.",
+    "cause_smart_app_control": "Slimme app-beheer van Windows heeft de engine geblokkeerd",
+    "cause_spawn_blocked": "Beveiligingssoftware heeft het starten van de engine geblokkeerd",
+    "cause_native_crash": "De engine is tijdens het starten gecrasht (native fout)",
+    "cause_missing_env": "De Python-omgeving ontbreekt of is onvolledig",
+    "cause_permission": "Geen schrijfrechten voor de enginemap",
+    "cause_synced_folder": "De enginemap staat in een met de cloud gesynchroniseerde map",
+    "cause_slow_start": "De engine is nog bezig met starten op een trage computer",
+    "choose_folder": "Andere map kiezen",
+    "copy_diagnostics": "Diagnose kopiëren",
+    "diagnostics_copied": "Diagnose gekopieerd",
+    "details": "Details",
+    "pill_starting": "Starten",
+    "pill_recovering": "Herstellen",
+    "pill_failed": "Mislukt",
+    "pill_repeats": "{{count}} keer achter elkaar",
+    "offline_bar": "Engine bezig, verbinding wordt automatisch hersteld"
   },
   "bootstrap": {
     "checking": "Omgeving controleren…",
@@ -2321,7 +2342,9 @@
     "not_included": "Niet in je abonnement",
     "plan_ends": "tot {{date}}",
     "details_failed": "Je accountgegevens konden niet worden geladen ({{reason}}).",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "manage_profile": "Profiel beheren",
+    "manage_plan": "Abonnement beheren"
   },
   "cloudsync": {
     "unavailable": "Synchronisatie is nu niet beschikbaar.",
@@ -2369,7 +2392,8 @@
     "storage_temp": "Tijdelijke bestanden",
     "change": "Wijzigen…",
     "reset_default": "Resetten naar standaard",
-    "region_label": "Downloadregio"
+    "region_label": "Downloadregio",
+    "free_space": "{{free}} GB vrij op deze schijf, ongeveer {{needed}} GB nodig"
   },
   "asr_missing": {
     "message": "Er is geen spraak-naar-tekstmodel geïnstalleerd — deze functie heeft er een nodig om audio te transcriberen.",
@@ -2511,7 +2535,18 @@
     "staleTitle": "Update beschikbaar",
     "staleMessage": "U gebruikt VoiceStudio {{current}}, maar {{latest}} is al uit — deze bug is daar mogelijk al verholpen. De nieuwste versie bekijken voordat u rapporteert?",
     "staleView": "Update bekijken",
-    "staleFileAnyway": "Toch rapporteren"
+    "staleFileAnyway": "Toch rapporteren",
+    "summary_label": "Wat ging er mis?",
+    "summary_placeholder": "Eén regel, bijvoorbeeld: nasynchronisatie stopt bij 40%",
+    "summary_required": "Voeg eerst een beschrijving van één regel toe.",
+    "sent_title": "Wat wordt verzonden",
+    "sent_app": "App-versie en build",
+    "sent_system": "Besturingssysteem, GPU, geheugen en vrije schijfruimte",
+    "sent_engines": "Welke engines actief zijn",
+    "sent_logs": "Recente enginelogregels, zonder bestandspaden en tokens",
+    "sent_pages": "Namen van onlangs bezochte pagina’s",
+    "not_sent": "Nooit verzonden: je audio, tekst, stemmen of bestandsnamen.",
+    "submit": "GitHub-issue openen"
   },
   "crash": {
     "notice_unclean": "De vorige sessie is {{ago}} geleden zonder nette afsluiting geëindigd. Dit is vaak onschuldig — de machine sliep, de app werd geforceerd gesloten of een VM/container stopte.",
@@ -2907,6 +2942,7 @@
     "host_memory_exhausted": "De computer heeft geen geheugen meer. Sluit andere geheugenintensieve apps en browsertabs, ontlaad ongebruikte modellen, genereer een kortere passage of kies een lichtere TTS-engine.",
     "engine_dependency_missing": "Een Python-pakket dat deze engine nodig heeft is niet geïnstalleerd, dus de engine kon niet starten. Open de Modelcatalogus, selecteer de engine en gebruik Installeren / Repareren en start VoiceStudio daarna opnieuw.",
     "reference_stt_missing": "Deze stem heeft geen transcriptie en er is geen spraak-naar-tekstmodel geïnstalleerd om er een te maken. Typ wat de referentieclip zegt in het transcriptievak (clips tot 20 seconden) of installeer een spraak-naar-tekstmodel in de Modelcatalogus, selecteer het en genereer opnieuw.",
+    "install_speech_model": "Spraakherkenningsmodel installeren",
     "proxy_gateway_error": "Een proxy of gateway tussen jou en VoiceStudio antwoordde met HTTP {{status}} in plaats van de backend. De backend is mogelijk nog bezig. Verhoog de lees-timeout van de proxy (bij nginx proxy_read_timeout) voor lange generaties en controleer daarna Instellingen → Logboeken → Backend.",
     "route_not_found": "De draaiende VoiceStudio-backend heeft geen {{route}}-endpoint. Start VoiceStudio opnieuw zodat app en backend overeenkomen; blijft het probleem, werk dan beide bij naar dezelfde versie."
   },
@@ -3800,7 +3836,7 @@
       "capture_slow": "Deze telefoon kon microfoonaudio niet snel genoeg verwerken. Sluit andere apps of gebruik je computer.",
       "preset_voice": "Stem {{number}}",
       "transfer": "{{received}} van {{total}}",
-      "privacy": "Taken op het apparaat blijven op deze telefoon. Alleen modeldownloads en je gekoppelde computer gebruiken het netwerk.",
+      "privacy": "Taken op het apparaat blijven op deze telefoon. Alleen modeldownloads, meldingen die je zelf verstuurt en je gekoppelde computer gebruiken het netwerk.",
       "computer_feature": "Deze functie draait momenteel op je computer. Je kunt Spreken en Dicteren op deze telefoon gebruiken zonder te koppelen.",
       "accepted": "Licentie geaccepteerd",
       "not_accepted": "Licentie niet geaccepteerd",
@@ -3886,6 +3922,35 @@
       "retry": "Opnieuw proberen",
       "rate_limited": "Te veel meldingen vanaf dit netwerk. Probeer het later opnieuw.",
       "invalid": "Deze melding kon niet worden verstuurd. Werk de app bij en probeer het opnieuw."
+    }
+  },
+  "failureCause": {
+    "details": "Details",
+    "fixes": "Voorgestelde oplossingen",
+    "vram": {
+      "title": "De GPU heeft geen geheugen meer",
+      "fix1": "Sluit andere GPU-apps",
+      "fix2": "Kies CPU of een kleinere engine"
+    },
+    "model_missing": {
+      "title": "Het model is niet gedownload",
+      "fix1": "Download het in de Modelcatalogus",
+      "fix2": "Gebruik Herstel om het te installeren"
+    },
+    "busy": {
+      "title": "De engine is bezig",
+      "fix1": "Wacht tot de huidige taak klaar is",
+      "fix2": "Probeer het zo meteen opnieuw"
+    },
+    "timeout": {
+      "title": "De generatie is verlopen",
+      "fix1": "Probeer een korter fragment",
+      "fix2": "Verhoog de proxy-timeout"
+    },
+    "bad_response": {
+      "title": "Onverwacht antwoord van de server",
+      "fix1": "Controleer de backend in Instellingen > Logboeken",
+      "fix2": "Start VoiceStudio opnieuw en probeer het nog eens"
     }
   }
 }
