@@ -10,17 +10,18 @@ import avatar8 from './contributors/swadhinbiswas.png';
 import avatar9 from './contributors/BichengWang.png';
 import avatar10 from './contributors/nirmalchatur.png';
 import avatar11 from './contributors/Shivendra-Coherent.png';
-import avatar12 from './contributors/marreiradigital.png';
-import avatar13 from './contributors/nvtoan0201-swe.png';
+import avatar12 from './contributors/alvig060121-afk.png';
+import avatar13 from './contributors/marreiradigital.png';
+import avatar14 from './contributors/nvtoan0201-swe.png';
 
-// GitHub /repos/debpalash/VoiceStudio/contributors snapshot, 2026-10-25.
+// GitHub /repos/debpalash/VoiceStudio/contributors snapshot, 2026-10-26.
 // Human contributors with strictly more than 10 repository commits; bundled for offline use.
 // Regenerate with `uv run scripts/update_contributors.py` (weekly: .github/workflows/contributors-refresh.yml).
 // Core maintainers are assigned by the project owner, independently of commit counts.
 export const homeCoreMaintainers = ['debpalash', 'velixio'] as const;
 
 export const homeContributors = [
-  { login: 'debpalash', commits: 3855, avatar: avatar0 },
+  { login: 'debpalash', commits: 3959, avatar: avatar0 },
   { login: 'velixio', commits: 727, avatar: avatar1 },
   { login: 'kevin9327', commits: 60, avatar: avatar2 },
   { login: 'jaketame', commits: 42, avatar: avatar3 },
@@ -32,6 +33,7 @@ export const homeContributors = [
   { login: 'BichengWang', commits: 17, avatar: avatar9 },
   { login: 'nirmalchatur', commits: 15, avatar: avatar10 },
   { login: 'Shivendra-Coherent', commits: 14, avatar: avatar11 },
-  { login: 'marreiradigital', commits: 11, avatar: avatar12 },
-  { login: 'nvtoan0201-swe', commits: 11, avatar: avatar13 },
+  { login: 'alvig060121-afk', commits: 12, avatar: avatar12 },
+  { login: 'marreiradigital', commits: 11, avatar: avatar13 },
+  { login: 'nvtoan0201-swe', commits: 11, avatar: avatar14 },
 ] as const;
